@@ -10,8 +10,14 @@ class UniversityController extends Controller
     public function index()
     {
         $universities = University::all();
-        $universities->load('faculties');
 
         return $universities;
+    }
+
+    public function show($id)
+    {
+        $university = University::where('id', $id)->first();
+
+        return $university;
     }
 }
