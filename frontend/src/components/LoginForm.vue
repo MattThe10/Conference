@@ -1,36 +1,42 @@
 <template>
-    <div id="wrapper">
-        <div id="wrapper-left">
+    <div class="wrapper">
+        <div class="wrapper-left">
             <h1>Login</h1>
-            <form action="" @submit.prevent="handleLogin" id="login-form">
+            <p v-if="wrongCredentials" class="warning warning-par">Ľutujeme, zadali ste nesprávny email alebo heslo</p>
+            <form action="" @submit.prevent="handleLogin" id="basic-form">
             <div class="wrapper-inp">
                 <label for="email-inp">Email</label>
-                <input type="email" id="email-inp" v-model="email" required >
+                <input type="email" id="email-inp" class="inp" v-model="email" required >
             </div>
             <div class="wrapper-inp">
                 <label for="pass-inp">Heslo</label>
-                <input type="password" id="pass-inp" v-model="password" >
+                <input type="password" id="pass-inp" class="inp" v-model="password" required>
             </div>
-            <button type="submit" id="login-btn">Prihlásiť sa</button>
+            <button type="submit" class="green-btn">Prihlásiť sa</button>
             </form>
             <p>Nemáte ešte účet? 
                 <router-link to="/register">Zaregistrujte sa!</router-link>
             </p>
         </div>
-        <div id="wrapper-right">
-            <img src="@/assets/office-2.jpg" alt="Conference desk with people">
+        <div class="wrapper-right">
+            <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people">
         </div>
     </div>
 </template>
+
 <script>
     import '@/styles/styles.css'
+    // import { useLoginStore } from './stores/formData'
+    // import { reactive } from 'vue'
+
     export default {
         data() {
             return {
                 email: '',
                 password: '',
                 dummy_email: 'admin@admin.com',
-                dummy_password: 'admin'
+                dummy_password: 'admin',
+                wrongCredentials: false
             }
         },
         methods: {
@@ -43,17 +49,35 @@
                     this.$router.push('/home')
                 } else {
                     console.log('Try again!')
+                    this.handleWrongCredentials()
                 }
                 
                 
+            },
+
+            handleWrongCredentials() {
+                this.wrongCredentials = !this.wrongCredentials
             }
-    }
-    }
+    },
+//     setup() {
+//     const loginStore = useLoginStore()
+//     const form = reactive({
+//       email: ''
+//     })
+
+//     const submitForm = () => {
+//       loginStore.updateLoginData({ ...form })
+//       // You can then clear the form, if desired
+//     }
+
+//     return { form, submitForm }
+//   }
+}
 </script>
 
 <style>
 
-#wrapper {
+    .wrapper {
     margin-top: 5rem;
     display: flex;
     flex-direction: row;
@@ -63,19 +87,22 @@
     height: 30rem;
 }
 
-#wrapper-left, #wrapper-right {
+.wrapper-left, .wrapper-right {
     height: 100%;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
-#wrapper-left {
+.wrapper-left {
     width: 30%;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     justify-content: center;
+    align-items: center;
 }   
 
-#wrapper-right {
+.wrapper-right {
     width: 30%;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -100,34 +127,32 @@ h1 {
     border-bottom-right-radius: 10px;
 }
 
-div {
+.wrapper-inp{
+    text-align: start;
     display: flex;
     flex-direction: column;
 }
 
-.wrapper-inp{
-    text-align: start
-}
-
-img {
+.image {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     height: 100%;
 }
 
-input {
+.inp {
     width: 15rem;
     height: 1.8rem;
 }
 
-#login-btn {
-    width: 45%;
+.green-btn {
+    width: 100%;
     background-color: #52b69a;
     color: white;
     font-size: 1.5rem;
     border: none;
     border-radius: 5px;
     margin-top: 15px;
+    margin-bottom: 5px;
     padding: 3px;
     cursor: pointer;
 }

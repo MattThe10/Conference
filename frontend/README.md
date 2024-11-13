@@ -1,4 +1,4 @@
-# Conference
+# conference
 
 ## Project setup
 ```
