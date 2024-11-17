@@ -10,12 +10,34 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve the current authenticated user
+    |--------------------------------------------------------------------------
+    |
+    | This method fetches and returns the currently authenticated user's data
+    | as a JSON response.
+    |
+    */
+
     public function getCurrentUser()
     {
         $user = Auth::user();
 
         return response()->json($user);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update the profile of the current authenticated user
+    |--------------------------------------------------------------------------
+    |
+    | This method validates the input data, verifies the current password,
+    | and updates the user's email, name, surname, faculty, and optionally
+    | updates the password if a new one is provided.
+    |
+    */
 
     public function updateCurrentUser(Request $request)
     {
