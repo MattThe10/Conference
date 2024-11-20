@@ -24,7 +24,8 @@ const routes = [
         {
             path: '/home',
             name: 'LandingPage',
-            component: LandingPage
+            component: LandingPage,
+            meta: { requiresAuth: true }
         }
     ]
 

@@ -46,9 +46,9 @@
             <img src="@/assets/office-2.jpg" alt="" class="image">
         </div>
     </div>
-    <p>*Heslo musí obsahovať minimálne 8 znakov,
+    <!-- <p>*Heslo musí obsahovať minimálne 8 znakov,
          pričom minimálne 1 z nich musí byť veľké písmeno a číslo
-    </p>
+    </p> -->
     
 </template>
 <script>

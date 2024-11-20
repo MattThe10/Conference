@@ -1,5 +1,5 @@
 <template>
-    <div class="landing-wrapper">
+    <!-- <div class="landing-wrapper">
         <div id="panel">
             <p class="router-p"><router-link to="/home">Home</router-link></p>
             <p class="router-p"><router-link to="/login">Login</router-link></p>
@@ -8,7 +8,7 @@
         <div id="content-page">
             <p>fewg</p>
         </div>
-    </div>
+    </div> -->
     <div>
         <div>
             {{ role.name }}
