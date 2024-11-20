@@ -29,6 +29,10 @@
     // import { useLoginStore } from './stores/formData'
     // import { reactive } from 'vue'
 
+    import axios from 'axios'
+
+    const backend_url = process.env.VUE_APP_BACKEND_URL;
+
     export default {
         data() {
             return {
@@ -42,15 +46,28 @@
         methods: {
             handleLogin() {
                 console.log('Trying to login as: ' , this.email)
-                if(this.email === this.dummy_email && this.password === this.dummy_password) {
-                    //Redirect to homepage after login
-                    console.clear()
-                    console.log('Succesfully logged in as ', this.email)
-                    this.$router.push('/home')
-                } else {
-                    console.log('Try again!')
-                    this.handleWrongCredentials()
-                }
+
+                axios.post(`${backend_url}/login`, {
+                    email: this.email,
+                    password: this.password,
+                })
+                .then(response => {
+                    console.log('Login successful: ', response.data);
+                    this.$router.push('/home');
+                })
+                .catch(error => {
+                    console.log('Login failed: ', error.response || error.message);
+                });
+
+                // if(this.email === this.dummy_email && this.password === this.dummy_password) {
+                //     //Redirect to homepage after login
+                //     console.clear()
+                //     console.log('Succesfully logged in as ', this.email)
+                //     this.$router.push('/home')
+                // } else {
+                //     console.log('Try again!')
+                //     this.handleWrongCredentials()
+                // }
                 
                 
             },

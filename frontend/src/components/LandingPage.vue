@@ -9,15 +9,68 @@
             <p>fewg</p>
         </div>
     </div>
+    <div>
+        <div>
+            {{ role.name }}
+        </div>
+        <div>
+            {{ user.name }} {{ user.surname }}
+        </div>
+        <div>
+            {{ user.email }}
+        </div>
+    </div>
+    <button @click="logout">
+        Logout
+    </button>
 </template>
 
 <script>
+
+    import axios from 'axios'
+
+    axios.defaults.withCredentials = true;
+    axios.defaults.withXSRFToken = true;
+
+    const backend_url = process.env.VUE_APP_BACKEND_URL;
+
     export default {
         data() {
-        return {
-            role: '' //Superadmin, admin, reviewer, student
+            return {
+                role: '', //Superadmin, admin, reviewer, student
+                user: '',
+            }
+        },
+        mounted() {
+            this.getUser();
+        },
+        methods: {
+            // Get current authenticated user informations
+            getUser() {
+                axios.get(`${backend_url}/api/current_user`)
+                    .then(response => {
+                        this.user = response.data;
+                        if (this.user.roles_id) {
+                            this.getRole();
+                        }
+                    })
+                    .catch(error => console.log(error));
+            },
+            // Get Role of current authenticated user informations
+            getRole() {
+                axios.get(`${backend_url}/api/role/${this.user.roles_id}`)
+                    .then(response => this.role = response.data)
+                    .catch(error => console.log(error));
+            },
+            logout() {
+                axios.post(`${backend_url}/logout`)
+                    .then(() => {
+                        console.log('Logged out');
+                        this.$router.push('/login');
+                    })
+                    .catch(error => console.log(error));
+            }
         }
-    }
     }  
 </script>
 
