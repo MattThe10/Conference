@@ -35,14 +35,26 @@ const routes = [
     })
 
     router.beforeEach(async (to, from, next) => {
+        // Check if the route requires authentication
         const isProtectedRoute = to.matched.some(record => record.meta.requiresAuth);
-        if (isProtectedRoute) {
-            const isAuthenticated = await checkAuth();
-            if (!isAuthenticated) {
-                next('/login');
-            }
+
+        // Verify if the user is authenticated
+        const isAuthenticated = await checkAuth();
+
+        // If the user is authenticated and tries to access the login or register pages,
+        // redirect them to the home page
+        if (isAuthenticated && (to.path == '/login' || to.path == '/register')) {
+            next('home');
         }
-        next();
+        // If the route is protected and the user is not authenticated,
+        // redirect them to the login page
+        else if (isProtectedRoute && !isAuthenticated) {
+            next('/login');
+        }
+        // In all other cases, proceed to the requested route
+        else {
+            next();
+        }
     });
 
     export default router
