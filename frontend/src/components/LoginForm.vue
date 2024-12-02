@@ -1,4 +1,5 @@
 <template>
+    <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}</p>
     <div class="wrapper">
         <div class="wrapper-left">
             <h1>Login</h1>
@@ -28,6 +29,7 @@
     import '@/styles/styles.css'
     // import { useLoginStore } from './stores/formData'
     // import { reactive } from 'vue'
+    import axios from 'axios';
 
     export default {
         data() {
@@ -36,43 +38,37 @@
                 password: '',
                 dummy_email: 'admin@admin.com',
                 dummy_password: 'admin',
-                wrongCredentials: false
+                wrongCredentials: false,
+                errorMessages: []
             }
         },
         methods: {
-            handleLogin() {
-                console.log('Trying to login as: ' , this.email)
-                if(this.email === this.dummy_email && this.password === this.dummy_password) {
-                    //Redirect to homepage after login
-                    console.clear()
-                    console.log('Succesfully logged in as ', this.email)
+            async handleLogin() {
+                try {
+                    console.log('Trying to login...');
+
+                    await axios.post('/login',{
+                        email: this.email,
+                        password: this.password,
+                    });
+
+                    console.log('Successfull login');
+
                     this.$router.push('/home')
-                } else {
-                    console.log('Try again!')
-                    this.handleWrongCredentials()
+                } catch (error) {
+                    console.log('Error while login: ', error);
+
+                    if (error.response) {
+                        if (error.response.data.errors) {
+                            this.errorMessages = Object.values(error.response.data.errors).flat();
+                        } else {
+                            this.errorMessages = error.response.data.message || 'Uknown error';
+                        }
+                    }
                 }
-                
-                
             },
-
-            handleWrongCredentials() {
-                this.wrongCredentials = !this.wrongCredentials
-            }
-    },
-//     setup() {
-//     const loginStore = useLoginStore()
-//     const form = reactive({
-//       email: ''
-//     })
-
-//     const submitForm = () => {
-//       loginStore.updateLoginData({ ...form })
-//       // You can then clear the form, if desired
-//     }
-
-//     return { form, submitForm }
-//   }
-}
+        },
+    }
 </script>
 
 <style>

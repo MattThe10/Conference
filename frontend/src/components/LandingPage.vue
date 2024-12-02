@@ -1,5 +1,5 @@
 <template>
-    <div class="landing-wrapper">
+    <!-- <div class="landing-wrapper">
         <div id="panel">
             <p class="router-p"><router-link to="/home">Home</router-link></p>
             <p class="router-p"><router-link to="/login">Login</router-link></p>
@@ -8,16 +8,83 @@
         <div id="content-page">
             <p>fewg</p>
         </div>
+    </div> -->
+    <div>
+        <div>
+            <div>
+                {{ role.name }}
+            </div>
+            <div>
+                {{ user.name }}
+                {{ user.surname }}
+            </div>
+            <div>
+                {{ user.email }}
+            </div>
+            <div>
+                {{ university.name }}
+            </div>
+            <div>
+                {{ faculty.name }}
+            </div>
+        </div>
+        <div>
+            <button @click="logout()">
+                Logout
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
+    import axios from 'axios';
+
     export default {
         data() {
-        return {
-            role: '' //Superadmin, admin, reviewer, student
+            return {
+                user: [],
+                role: [], //Superadmin, admin, reviewer, student
+                faculty: [],
+                university: [],
+            }
+        },
+        methods: {
+            async getUser() {
+                try {
+                    console.log('Loading user data...');
+
+                    const user_response = await axios.get('/api/current_user');
+                    this.user = user_response.data;
+
+                    const role_response = await axios.get(`/api/role/${this.user.roles_id}`);
+                    this.role = role_response.data;
+
+                    const faculty_response = await axios.get(`/api/faculty/${this.user.faculties_id}`);
+                    this.faculty = faculty_response.data;
+
+                    const university_response = await axios.get(`/api/university/${this.faculty.universities_id}`);
+                    this.university = university_response.data;
+                } catch (error) {
+                    console.log('Error loading user data: ', error);
+                }
+            },
+            async logout() {
+                try {
+                    console.log('Trying to logout...');
+
+                    await axios.post('/logout');
+
+                    console.log('Successfull logout');
+
+                    this.$router.push('/login')
+                } catch (error) {
+                    console.log('Error while logout: ', error);
+                }
+            }
+        },
+        mounted() {
+            this.getUser();
         }
-    }
     }  
 </script>
 
