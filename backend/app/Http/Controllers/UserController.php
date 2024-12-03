@@ -10,6 +10,22 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve all users
+    |--------------------------------------------------------------------------
+    |
+    | This method fetches all records from the `users` table and 
+    | returns them as a JSON response.
+    |
+    */
+
+    public function index()
+    {
+        $users = User::all();
+
+        return response()->json($users);
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -70,5 +86,25 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Successfully updated.'
         ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve all articles by its user ID
+    |--------------------------------------------------------------------------
+    |
+    | This method fetches a article record based on the provided ID and 
+    | returns it as a JSON response. If the article is not found, it
+    | returns `null`.
+    |
+    */
+
+    public function getUserArticles($user_id)
+    {
+        $user = User::findOrFail($user_id);
+
+        $articles = $user->articles()->with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
+
+        return response()->json($articles);
     }
 }

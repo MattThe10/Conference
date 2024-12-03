@@ -32,8 +32,8 @@ class Conference extends Model
 	protected $table = 'conferences';
 
 	protected $casts = [
-		'start_year' => 'datetime',
-		'end_year' => 'datetime',
+		'start_year' => 'integer',
+		'end_year' => 'integer',
 		'conference_date' => 'datetime',
 		'submission_deadline' => 'datetime',
 		'location_id' => 'int'
