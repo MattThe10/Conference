@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ConferenceController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UniversityController;
@@ -74,4 +76,56 @@ Route::controller(FacultyController::class)->group(function () {
 Route::controller(RoleController::class)->group(function () {
     Route::get('/roles', 'index');
     Route::get('/role/{role_id}', 'show');
+});
+
+
+/*
+|---------------------------------------------------------------------------
+| Conference Routes
+|---------------------------------------------------------------------------
+|
+| - GET /conferences: Returns a list of all conferences.
+| - GET /conferences/{id}: Returns a specific conference by its ID.
+|
+*/
+
+Route::controller(ConferenceController::class)->group(function () {
+    Route::get('/conferences', 'index');
+    Route::get('/conferences/{id}', 'show');
+});
+
+/*
+|---------------------------------------------------------------------------
+| User Routes
+|---------------------------------------------------------------------------
+|
+| - GET /user/{id}/articles: Returns a list of all articles associated with
+| a specific user.
+|
+*/
+
+Route::controller(UserController::class)->group(function () {
+    Route::get('/users', 'index');
+    Route::get('/users/{id}/articles', 'getUserArticles');
+});
+
+/*
+|---------------------------------------------------------------------------
+| Article Routes
+|---------------------------------------------------------------------------
+|
+| - GET /articles: Returns a list of all articles.
+| - GET /articles/{id}: Returns a specific article by its ID.
+| - POST /articles: Creates a new article.
+| - PUT /articles/{id}: Updates an existing article by its ID.
+| - DELETE /articles/{id}: Deletes an article by its ID.
+|
+*/
+
+Route::controller(ArticleController::class)->group(function () {
+    Route::get('/articles', 'index');
+    Route::get('/articles/{id}', 'show');
+    Route::post('/articles', 'store');
+    Route::put('/articles/{id}', 'update');
+    Route::delete('/articles/{id}', 'destroy');
 });
