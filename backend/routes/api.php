@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\ArticleStatusController;
+use App\Http\Controllers\ConferenceController;
 use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\ReviewFeatureController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserController;
@@ -44,6 +47,10 @@ Route::middleware([Authenticate::class])
 Route::controller(UniversityController::class)->group(function () {
     Route::get('/universities', 'index');
     Route::get('/university/{university_id}', 'show');
+    Route::post('/universities/store', 'store');
+    Route::put('/universities/{university_id}', 'update');
+    Route::delete('/universities/{university_id}', 'destroy');
+
 });
 
 /*
@@ -58,7 +65,11 @@ Route::controller(UniversityController::class)->group(function () {
 
 Route::controller(FacultyController::class)->group(function () {
     Route::get('/faculties', 'index');
-    Route::get('/faculty/{faculty_id}', 'show');
+    Route::get('/faculties/{faculty_id}', 'show');
+    Route::post('/faculties/store', 'store');
+    Route::put('/faculties/{faculty_id}', 'update');
+    Route::delete('/faculties/{faculty_id}', 'destroy');
+
 });
 
 /*
@@ -74,4 +85,61 @@ Route::controller(FacultyController::class)->group(function () {
 Route::controller(RoleController::class)->group(function () {
     Route::get('/roles', 'index');
     Route::get('/role/{role_id}', 'show');
+    Route::post('/roles/store', 'store');
+    Route::put('/roles/{role_id}', 'update');
+    Route::delete('/roles/{role_id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| ArticleStatus Routes
+|---------------------------------------------------------------------------
+|
+| - GET /article_statuses: Returns a list of all article_statuses.
+| - GET /article_status/{article_status_id}: Returns a specific article_status by its ID.
+|
+*/
+
+Route::controller(ArticleStatusController::class)->group(function () {
+    Route::get('/article_statuses', 'index');
+    Route::get('/article_status/{article_status_id}', 'show');
+    Route::post('/article_statuses/store', 'store');
+    Route::put('/article_statuses/{article_status_id}', 'update');
+    Route::delete('/article_statuses/{article_status_id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| Conference Routes
+|---------------------------------------------------------------------------
+|
+| - GET /conferences: Returns a list of all conferences.
+| - GET /conference/{conference_id}: Returns a specific conference by its ID.
+|
+*/
+
+Route::controller(ConferenceController::class)->group(function () {
+    Route::get('/conferences', 'index');
+    Route::get('/conference/{conference_id}', 'show');
+    Route::post('/conferences/store', 'store');
+    Route::put('/conferences/{conference_id}', 'update');
+    Route::delete('/conferences/{conference_id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| ReviewFeature Routes
+|---------------------------------------------------------------------------
+|
+| - GET /review_features: Returns a list of all review_features.
+| - GET /review_feature/{review_feature_id}: Returns a specific review_feature by its ID.
+|
+*/
+
+Route::controller(ReviewFeatureController::class)->group(function () {
+    Route::get('/review_features', 'index');
+    Route::get('/review_feature/{review_feature_id}', 'show');
+    Route::post('/review_features/store', 'store');
+    Route::put('/review_features/{review_feature_id}', 'update');
+    Route::delete('/review_features/{review_feature_id}', 'destroy');
 });

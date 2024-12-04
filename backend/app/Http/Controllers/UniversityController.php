@@ -42,4 +42,94 @@ class UniversityController extends Controller
 
         return response()->json($university);
     }
+    /*
+    |--------------------------------------------------------------------------
+    | Store a newly created university in the database.
+    |--------------------------------------------------------------------------
+    |
+    | This method validates the request data and creates a new university
+    | record in the `universities` table. It returns a 201 status code upon
+    | successful creation.
+    |
+    */
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'          => ['required', 'string', 'max:255'],
+            'address'       => ['required', 'string', 'max:255'],
+		    'city'          => ['required', 'string', 'max:255'],
+		    'postal_code'   => ['nullable', 'string', 'max:10'],
+		    'country'       => ['required', 'string', 'max:255'],
+        ]);
+
+        university::create([
+            'name'          => $validated['name'],
+            'address'       => $validated['address'],
+		    'city'          => $validated['city'],
+		    'postal_code'   => $validated['postal_code'] ?? null,
+		    'country'       => $validated['country'],
+        ]);
+
+        return response()->json([
+            'message' => 'Successfully stored.'
+        ], 201); // 201 CREATED
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update the specified university in the database.
+    |--------------------------------------------------------------------------
+    |
+    | This method validates the request data, finds the specified university
+    | by its ID, and updates its information. It returns a 200 status code
+    | upon successful update.
+    |
+    */
+
+    public function update(Request $request, $university_id)
+    {
+        $validated = $request->validate([
+            'name'          => ['required', 'string', 'max:255'],
+            'address'       => ['required', 'string', 'max:255'],
+		    'city'          => ['required', 'string', 'max:255'],
+		    'postal_code'   => ['nullable', 'string', 'max:10'],
+		    'country'       => ['required', 'string', 'max:255'],
+
+        ]);
+
+        $university = Faculty::findOrFail($university_id);
+
+        $university->update([
+            'name'          => $validated['name'],
+            'address'       => $validated['address'],
+		    'city'          => $validated['city'],
+		    'postal_code'   => $validated['postal_code'] ?? null,
+		    'country'       => $validated['country'],
+        ]);
+
+        return response()->json([
+            'message' => 'Successfully updated.'
+        ], 200); // 200 OK
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remove the specified university from the database.
+    |--------------------------------------------------------------------------
+    |
+    | This method deletes the specified university record based on the provided ID.
+    | It returns a 200 status code upon successful deletion.
+    |
+    */
+
+    public function destroy($university_id)
+    {
+        $university = Faculty::findOrFail($university_id);
+        $university->delete();
+
+        return response()->json([
+            'message' => 'Successfully deleted.'
+        ], 200); // 200 OK
+    }
 }

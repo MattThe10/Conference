@@ -2,54 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
+use App\Models\ArticleStatus;
 use Illuminate\Http\Request;
 
-class RoleController extends Controller
+class ArticleStatusController extends Controller
 {
-
     /*
     |--------------------------------------------------------------------------
-    | Retrieve all roles
+    | Retrieve all article_status
     |--------------------------------------------------------------------------
     |
-    | This method fetches all records from the `roles` table and 
+    | This method fetches all records from the `article_statuses` table and 
     | returns them as a JSON response.
     |
     */
 
     public function index()
     {
-        $roles = Role::all();
+        $article_statuses = article_status::all();
 
-        return response()->json($roles);
+        return response()->json($article_statuses);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Retrieve a specific role by its ID
+    | Retrieve a specific article_status by its ID
     |--------------------------------------------------------------------------
     |
-    | This method fetches a role record based on the provided ID and 
-    | returns it as a JSON response. If the role is not found, it
+    | This method fetches a article_status record based on the provided ID and 
+    | returns it as a JSON response. If the article_status is not found, it
     | returns `null`.
     |
     */
 
-    public function show($role_id)
+    public function show($article_status_id)
     {
-        $role = Role::findOrFail($role_id);
+        $article_status = Faculty::findOrFail($article_status_id);
 
-        return response()->json($role);
+        return response()->json($article_status);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Store a newly created role in the database.
+    | Store a newly created article_status in the database.
     |--------------------------------------------------------------------------
     |
-    | This method validates the request data and creates a new role
-    | record in the `roles` table. It returns a 201 status code upon
+    | This method validates the request data and creates a new article_status
+    | record in the `article_statuses` table. It returns a 201 status code upon
     | successful creation.
     |
     */
@@ -61,7 +60,7 @@ class RoleController extends Controller
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        role::create([
+        article_status::create([
             'key'   => $validated['key'],
             'name'  => $validated['name'] ?? null,
         ]);
@@ -73,10 +72,10 @@ class RoleController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Update the specified role in the database.
+    | Update the specified article_status in the database.
     |--------------------------------------------------------------------------
     |
-    | This method validates the request data, finds the specified role
+    | This method validates the request data, finds the specified article_status
     | by its ID, and updates its information. It returns a 200 status code
     | upon successful update.
     |
@@ -89,9 +88,9 @@ class RoleController extends Controller
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        $role = Faculty::findOrFail($role_id);
+        $article_status = Faculty::findOrFail($article_status_id);
 
-        $role->update([
+        $article_status->update([
             'key'   => $validated['key'],
             'name'  => $validated['name'] ?? null,
         ]);
@@ -103,18 +102,18 @@ class RoleController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Remove the specified role from the database.
+    | Remove the specified article_status from the database.
     |--------------------------------------------------------------------------
     |
-    | This method deletes the specified role record based on the provided ID.
+    | This method deletes the specified article_status record based on the provided ID.
     | It returns a 200 status code upon successful deletion.
     |
     */
 
-    public function destroy($role_id)
+    public function destroy($article_status_id)
     {
-        $role = Faculty::findOrFail($role_id);
-        $role->delete();
+        $article_status = Faculty::findOrFail($article_status_id);
+        $article_status->delete();
 
         return response()->json([
             'message' => 'Successfully deleted.'
