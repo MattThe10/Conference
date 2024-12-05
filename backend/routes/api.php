@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArticleStatusController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ConferenceController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\ReviewFeatureController;
@@ -142,4 +143,40 @@ Route::controller(ReviewFeatureController::class)->group(function () {
     Route::post('/review_features/store', 'store');
     Route::put('/review_features/{review_feature_id}', 'update');
     Route::delete('/review_features/{review_feature_id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| User Routes
+|---------------------------------------------------------------------------
+|
+| - GET /user/{id}/articles: Returns a list of all articles associated with
+| a specific user.
+|
+*/
+
+Route::controller(UserController::class)->group(function () {
+    Route::get('/users', 'index');
+    Route::get('/users/{id}/articles', 'getUserArticles');
+});
+
+/*
+|---------------------------------------------------------------------------
+| Article Routes
+|---------------------------------------------------------------------------
+|
+| - GET /articles: Returns a list of all articles.
+| - GET /articles/{id}: Returns a specific article by its ID.
+| - POST /articles: Creates a new article.
+| - PUT /articles/{id}: Updates an existing article by its ID.
+| - DELETE /articles/{id}: Deletes an article by its ID.
+|
+*/
+
+Route::controller(ArticleController::class)->group(function () {
+    Route::get('/articles', 'index');
+    Route::get('/articles/{id}', 'show');
+    Route::post('/articles', 'store');
+    Route::put('/articles/{id}', 'update');
+    Route::delete('/articles/{id}', 'destroy');
 });

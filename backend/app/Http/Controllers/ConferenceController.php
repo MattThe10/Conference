@@ -37,7 +37,7 @@ class ConferenceController extends Controller
 
     public function show($conference_id)
     {
-        $conference = Faculty::findOrFail($conference_id);
+        $conference = Conference::findOrFail($conference_id);
 
         return response()->json($conference);
     }
@@ -90,10 +90,10 @@ class ConferenceController extends Controller
     public function update(Request $request, $conference_id)
     {
         $validated = $request->validate([
-            'start_year'          => ['required', 'date'],
-		    'end_year'            => ['required', 'date'],
-		    'conference_date'     => ['required', 'date'],
-		    'submission_deadline' => ['required', 'date'],
+            'start_year'          => ['required', 'datetime'],
+		    'end_year'            => ['required', 'datetime'],
+		    'conference_date'     => ['required', 'datetime'],
+		    'submission_deadline' => ['required', 'datetime'],
 		    'location_id'         => ['required', 'exists:universities,id'],
         ]);
 
@@ -124,7 +124,7 @@ class ConferenceController extends Controller
 
     public function destroy($conference_id)
     {
-        $conference = Faculty::findOrFail($conference_id);
+        $conference = Conference::findOrFail($conference_id);
         $conference->delete();
 
         return response()->json([
