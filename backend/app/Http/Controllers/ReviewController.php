@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Review;
 use App\Models\ReviewFeature;
-use App\Models\User;
+use App\Models\ReviewsHasReviewFeature;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
@@ -70,7 +68,7 @@ class ReviewController extends Controller
 
         foreach ($validated['features'] as $feature_id => $value) {
             if (ReviewFeature::where('id', $feature_id)->first()->rating_type == 0) {
-                DB::table('reviews_has_review_features')->updateOrInsert(
+                ReviewsHasReviewFeature::updateOrCreate(
                     [
                         'reviews_id'   => $review->id,
                         'review_features_id'  => $feature_id,
@@ -80,7 +78,7 @@ class ReviewController extends Controller
                     ]
                 );
             } else {
-                DB::table('reviews_has_review_features')->updateOrInsert(
+                ReviewsHasReviewFeature::updateOrCreate(
                     [
                         'reviews_id'   => $review->id,
                         'review_features_id'  => $feature_id,
@@ -94,7 +92,7 @@ class ReviewController extends Controller
 
         return response()->json([
             'message'   => 'Review updated successfully.',
-        ], 201);
+        ], 200);
     }
 
     public function destroy($review_id)
