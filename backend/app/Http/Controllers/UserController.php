@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
@@ -106,5 +107,41 @@ class UserController extends Controller
         $articles = $user->articles()->with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
 
         return response()->json($articles);
+    }
+
+    public function getArticlesForReview($user_id)
+    {
+        $user = User::findOrFail($user_id);
+
+        $articles = $user->reviews()->with(['article.users'])->get();
+
+        return response()->json($articles);
+    }
+
+    public function update(Request $request, $user_id)
+    {
+        $validated = $request->validate([
+            'new_password'      => ['nullable', Password::defaults()],
+            'email'             => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user_id],
+            'name'              => ['required', 'string', 'max:255'],
+            'surname'           => ['required', 'string', 'max:255'],
+            'faculty_id'        => ['required', 'exists:faculties,id'],
+            'role_id'           => ['required', 'exists:roles,id'],
+        ]);
+
+        $user = User::findOrFail($user_id);
+
+        $user->update([
+            'email'         => $validated['email'],
+            'name'          => $validated['name'],
+            'surname'       => $validated['surname'],
+            'faculties_id'  => $validated['faculty_id'],
+            'roles_id'      => $validated['role_id'],
+            'password'      => isset($validated['new_password']) ? Hash::make($validated['new_password']) : $user->password,
+        ]);
+
+        return response()->json([
+            'message' => 'Successfully updated.'
+        ]);
     }
 }

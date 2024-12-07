@@ -4,6 +4,7 @@ use App\Http\Controllers\ArticleStatusController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ConferenceController;
 use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewFeatureController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UniversityController;
@@ -158,6 +159,8 @@ Route::controller(ReviewFeatureController::class)->group(function () {
 Route::controller(UserController::class)->group(function () {
     Route::get('/users', 'index');
     Route::get('/users/{id}/articles', 'getUserArticles');
+    Route::get('/users/{id}/articles_for_review', 'getArticlesForReview');
+    Route::put('/users/{id}', 'update');
 });
 
 /*
@@ -179,4 +182,46 @@ Route::controller(ArticleController::class)->group(function () {
     Route::post('/articles', 'store');
     Route::put('/articles/{id}', 'update');
     Route::delete('/articles/{id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| Review Routes
+|---------------------------------------------------------------------------
+|
+| - GET /reviews: Returns a list of all reviews.
+| - GET /reviews/{id}: Returns a specific review by its ID.
+| - POST /reviews: Creates a new review.
+| - PUT /reviews/{id}: Updates an existing review by its ID.
+| - DELETE /reviews/{id}: Deletes an review by its ID.
+|
+*/
+
+Route::controller(ReviewController::class)->group(function () {
+    Route::get('/reviews', 'index');
+    Route::get('/reviews/{id}', 'show');
+    Route::post('/reviews', 'store');
+    Route::put('/reviews/{id}', 'update');
+    Route::delete('/reviews/{id}', 'destroy');
+});
+
+/*
+|---------------------------------------------------------------------------
+| Review feature Routes
+|---------------------------------------------------------------------------
+|
+| - GET /feature_values: Returns a list of all review features.
+| - GET /feature_values/{id}: Returns a specific review feature by its ID.
+| - POST /feature_values: Creates a new review feature.
+| - PUT /feature_values/{id}: Updates an existing review feature by its ID.
+| - DELETE /feature_values/{id}: Deletes an review feature by its ID.
+|
+*/
+
+Route::controller(ReviewFeatureController::class)->group(function () {
+    Route::get('/feature_values', 'index');
+    Route::get('/feature_values/{id}', 'show');
+    Route::post('/feature_values', 'store');
+    Route::put('/feature_values/{id}', 'update');
+    Route::delete('/feature_values/{id}', 'destroy');
 });
