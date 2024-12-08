@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginForm from '@/components/LoginForm.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LandingPage from '@/components/LandingPage.vue'
+import ArticlesPage from '@/components/ArticlesPage.vue'
 
 import { checkAuth } from '@/auth';
 
@@ -26,7 +27,14 @@ const routes = [
             name: 'LandingPage',
             component: LandingPage,
             meta: { requiresAuth: true },
+        },
+        {
+            path: '/articles',
+            name: 'ArticlesPage',
+            component: ArticlesPage
         }
+
+        
     ]
 
     const router = createRouter({
