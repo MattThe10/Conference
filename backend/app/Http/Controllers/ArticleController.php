@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ArticlesExport;
 use App\Models\Article;
 use App\Models\ArticleStatus;
 use App\Models\Conference;
@@ -12,6 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ZipArchive;
 
 class ArticleController extends Controller
 {
@@ -146,5 +151,89 @@ class ArticleController extends Controller
                 'message' => 'Failed to delete article and documents.'
             ], 500);
         }
+    }
+
+    public function download(Request $request)
+    {
+        $validated = $request->validate([
+            'article_ids'   => ['required', 'array'],
+            'article_ids.*' => ['integer', 'exists:articles,id'],
+        ]);
+
+        $all_documents = collect();
+        $data = [];
+
+        foreach ($validated['article_ids'] as $article_id) {
+            $article = Article::findOrFail($article_id);
+            $documents = $article->documents;
+            $all_documents = $all_documents->merge($documents);
+
+            $article_data = [
+                'id'        => $article->id,
+                'title'     => $article->title,
+                'status'    => $article->article_status->name,
+                'authors'   => [],
+            ];
+
+            foreach ($article->users as $user) {
+                $user_data = [
+                    'id'            => $user->id,
+                    'name'          => $user->name,
+                    'surname'       => $user->surname,
+                    'email'         => $user->email,
+                    'role'          => $user->role->name,
+                    'university'    => $user->faculty->university->name,
+                    'faculty'       => $user->faculty->name,
+                ];
+
+                $article_data['authors'][] = $user_data;
+            }
+
+            $data[] = $article_data;
+        } 
+
+        if ($all_documents->isNotEmpty()) {
+            $excel_file_name = 'article_list_' . uniqid() . '.xlsx';
+            $excel_path = storage_path('app/public/' . $excel_file_name);
+
+            Excel::store(new ArticlesExport($data), $excel_file_name, 'public');
+
+            $zip_file_name = 'article_list_' . uniqid() . '.zip';
+            $zip = new ZipArchive();
+
+            if ($zip->open($zip_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE) != true) {
+                Log::error("Could not create ZIP file.");
+            }
+
+            if (in_array(Auth::user()->role->key, ['super_admin', 'admin']) && file_exists($excel_path)) {
+                $zip->addFile($excel_path, 'article_list.xlsx');
+            }
+
+            foreach ($all_documents as $document) {
+                $zip_path = storage_path('app/public/' . $document->path);
+
+                if (file_exists($zip_path)) {
+                    $relative_path = $document->articles_id . '/' . basename($document->path);
+                    $zip->addFile($zip_path, $relative_path);
+                }
+            }
+
+            $zip->close();
+
+            if (file_exists($excel_path)) {
+                unlink($excel_path);
+            }
+
+            return response()->streamDownload(function () use ($zip_file_name) {
+                readfile($zip_file_name);
+                if (file_exists($zip_file_name)) {
+                    unlink($zip_file_name);
+                }
+            });
+        }
+
+        return response()->json([
+            'message' => 'No files found for the specified type.'
+        ], 404);
     }
 }

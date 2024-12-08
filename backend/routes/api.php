@@ -182,6 +182,7 @@ Route::controller(ArticleController::class)->group(function () {
     Route::post('/articles', 'store');
     Route::put('/articles/{id}', 'update');
     Route::delete('/articles/{id}', 'destroy');
+    Route::post('/articles/download', 'download');
 });
 
 /*
