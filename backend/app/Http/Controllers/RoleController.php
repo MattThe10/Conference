@@ -61,7 +61,7 @@ class RoleController extends Controller
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        role::create([
+        Role ::create([
             'key'   => $validated['key'],
             'name'  => $validated['name'] ?? null,
         ]);
@@ -82,14 +82,14 @@ class RoleController extends Controller
     |
     */
 
-    public function update(Request $request, $article_status_id)
+    public function update(Request $request, $role_id)
     {
         $validated = $request->validate([
             'key'   => ['required', 'string'],
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        $role = Faculty::findOrFail($role_id);
+        $role = Role::findOrFail($role_id);
 
         $role->update([
             'key'   => $validated['key'],
@@ -113,7 +113,7 @@ class RoleController extends Controller
 
     public function destroy($role_id)
     {
-        $role = Faculty::findOrFail($role_id);
+        $role = Role::findOrFail($role_id);
         $role->delete();
 
         return response()->json([

@@ -19,7 +19,7 @@ class ArticleStatusController extends Controller
 
     public function index()
     {
-        $article_statuses = article_status::all();
+        $article_statuses = ArticleStatus::all();
 
         return response()->json($article_statuses);
     }
@@ -37,7 +37,7 @@ class ArticleStatusController extends Controller
 
     public function show($article_status_id)
     {
-        $article_status = Faculty::findOrFail($article_status_id);
+        $article_status = ArticleStatus::findOrFail($article_status_id);
 
         return response()->json($article_status);
     }
@@ -60,7 +60,7 @@ class ArticleStatusController extends Controller
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        article_status::create([
+        ArticleStatus::create([
             'key'   => $validated['key'],
             'name'  => $validated['name'] ?? null,
         ]);
@@ -88,7 +88,7 @@ class ArticleStatusController extends Controller
             'name'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        $article_status = Faculty::findOrFail($article_status_id);
+        $article_status = ArticleStatus::findOrFail($article_status_id);
 
         $article_status->update([
             'key'   => $validated['key'],
@@ -112,7 +112,7 @@ class ArticleStatusController extends Controller
 
     public function destroy($article_status_id)
     {
-        $article_status = Faculty::findOrFail($article_status_id);
+        $article_status = ArticleStatus::findOrFail($article_status_id);
         $article_status->delete();
 
         return response()->json([

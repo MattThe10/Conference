@@ -63,7 +63,7 @@ class UniversityController extends Controller
 		    'country'       => ['required', 'string', 'max:255'],
         ]);
 
-        university::create([
+        University::create([
             'name'          => $validated['name'],
             'address'       => $validated['address'],
 		    'city'          => $validated['city'],
@@ -98,7 +98,7 @@ class UniversityController extends Controller
 
         ]);
 
-        $university = Faculty::findOrFail($university_id);
+        $university = University::findOrFail($university_id);
 
         $university->update([
             'name'          => $validated['name'],
@@ -125,7 +125,7 @@ class UniversityController extends Controller
 
     public function destroy($university_id)
     {
-        $university = Faculty::findOrFail($university_id);
+        $university = University::findOrFail($university_id);
         $university->delete();
 
         return response()->json([

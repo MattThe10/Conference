@@ -19,7 +19,7 @@ class ConferenceController extends Controller
 
     public function index()
     {
-        $conferences = conference::all();
+        $conferences = Conference::all();
 
         return response()->json($conferences);
     }
@@ -63,7 +63,7 @@ class ConferenceController extends Controller
 		    'location_id'         => ['required', 'exists:universities,id'],
         ]);
 
-        conference::create([
+        Conference::create([
             'start_year'          => $validated['start_year'],
 		    'end_year'            => $validated['end_year'],
 		    'conference_date'     => $validated['conference_date'],
@@ -97,7 +97,7 @@ class ConferenceController extends Controller
 		    'location_id'         => ['required', 'exists:universities,id'],
         ]);
 
-        $conference = Faculty::findOrFail($conference_id);
+        $conference = Conference::findOrFail($conference_id);
 
         $conference->update([
             'start_year'          => $validated['start_year'],

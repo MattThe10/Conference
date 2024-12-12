@@ -19,7 +19,7 @@ class ReviewFeatureController extends Controller
 
     public function index()
     {
-        $review_features = review_feature::all();
+        $review_features = ReviewFeature::all();
 
         return response()->json($review_features);
     }
@@ -37,7 +37,7 @@ class ReviewFeatureController extends Controller
 
     public function show($review_feature_id)
     {
-        $review_feature = Faculty::findOrFail($review_feature_id);
+        $review_feature = ReviewFeature::findOrFail($review_feature_id);
 
         return response()->json($review_feature);
     }
@@ -60,7 +60,7 @@ class ReviewFeatureController extends Controller
             'is_active' => ['required', 'int'],
         ]);
 
-        review_feature::create([
+        ReviewFeature::create([
             'content'   => $validated['content'],
             'is_active' => $validated['is_active'],
         ]);
@@ -88,7 +88,7 @@ class ReviewFeatureController extends Controller
             'is_active'  => ['required', 'int'],
         ]);
 
-        $review_feature = Faculty::findOrFail($review_feature_id);
+        $review_feature = ReviewFeature::findOrFail($review_feature_id);
 
         $review_feature->update([
             'content'   => $validated['content'],
@@ -112,7 +112,7 @@ class ReviewFeatureController extends Controller
 
     public function destroy($review_feature_id)
     {
-        $review_feature = Faculty::findOrFail($review_feature_id);
+        $review_feature = ReviewFeature::findOrFail($review_feature_id);
         $review_feature->delete();
 
         return response()->json([
