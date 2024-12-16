@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -62,17 +63,18 @@ class UserController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'current_password'  => ['required'],
-            'new_password'      => ['nullable', Password::defaults()],
-            'email'             => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'name'              => ['required', 'string', 'max:255'],
-            'surname'           => ['required', 'string', 'max:255'],
-            'faculty_id'        => ['required', 'exists:faculties,id'],
+            'current_password'              => ['required'],
+            'new_password'                  => ['nullable', Rules\Password::min(8)->mixedCase()->numbers()],
+            'new_password_confirmation'     => ['nullable', 'same:new_password'],
+            'email'                         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'name'                          => ['required', 'string', 'max:255'],
+            'surname'                       => ['required', 'string', 'max:255'],
+            'faculty_id'                    => ['required', 'exists:faculties,id'],
         ]);
 
         if (!Hash::check($validated['current_password'], $user->password)) {
             return response()->json([
-                'message' => 'Wrong password.'
+                'message' => 'Wrong current password.'
             ], 401);
         }
 

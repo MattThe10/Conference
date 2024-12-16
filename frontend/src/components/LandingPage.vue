@@ -58,14 +58,14 @@ export default {
                 this.role = role_response.data;
 
                 const faculty_response = await axios.get(
-                    `/api/faculty/${this.user.faculties_id}`
+                    `/api/faculties/${this.user.faculties_id}`
                 );
                 this.faculty = faculty_response.data;
 
                 const university_response = await axios.get(
-                    `/api/university/${this.faculty.universities_id}`
+                    `/api/universities/${this.faculty.universities_id}`
                 );
-                this.university = university_response.data;
+                this.university = university_response.data;console.log(university_response.data);
             } catch (error) {
                 console.log("Error loading user data: ", error);
             }

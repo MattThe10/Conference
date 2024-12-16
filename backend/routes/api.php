@@ -48,7 +48,7 @@ Route::middleware([Authenticate::class])
 
 Route::controller(UniversityController::class)->group(function () {
     Route::get('/universities', 'index');
-    Route::get('/university/{university_id}', 'show');
+    Route::get('/universities/{university_id}', 'show');
     Route::post('/universities/store', 'store');
     Route::put('/universities/{university_id}', 'update');
     Route::delete('/universities/{university_id}', 'destroy');
