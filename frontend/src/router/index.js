@@ -4,6 +4,7 @@ import LoginForm from '@/components/LoginForm.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import LandingPage from '@/components/LandingPage.vue'
 import ArticlesPage from '@/components/ArticlesPage.vue'
+import ProfilePage from '@/components/ProfilePage.vue'
 
 import { checkAuth } from '@/auth';
 
@@ -32,6 +33,11 @@ const routes = [
             path: '/articles',
             name: 'ArticlesPage',
             component: ArticlesPage
+        },
+        {
+            path: '/profile',
+            name: 'ProfilePage',
+            component: ProfilePage
         }
 
         

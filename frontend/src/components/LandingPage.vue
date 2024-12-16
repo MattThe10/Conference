@@ -1,5 +1,6 @@
 <template>
     <NavBar></NavBar>
+    <ConferenceData></ConferenceData>
     <div id="user-wrapper">
         <div id="user-details">
             <div>
@@ -28,10 +29,12 @@
 <script>
 import axios from "axios";
 import NavBar from "./NavBar.vue";
+import ConferenceData from './ConferenceData.vue'
 
 export default {
     components: {
         NavBar,
+        ConferenceData
     },
     data() {
         return {
