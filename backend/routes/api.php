@@ -180,7 +180,7 @@ Route::controller(ArticleController::class)->group(function () {
     Route::get('/articles', 'index');
     Route::get('/articles/{id}', 'show');
     Route::post('/articles', 'store');
-    Route::put('/articles/{id}', 'update');
+    Route::post('/articles/{id}', 'update');
     Route::delete('/articles/{id}', 'destroy');
     Route::post('/articles/download', 'download');
 });

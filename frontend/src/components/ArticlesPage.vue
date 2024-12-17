@@ -33,20 +33,20 @@
             </ul>
         </div>
     </div>
-    <!-- <div id="articles-button">
-        <button id="btn-insert" @click="showModal = true">Vložiť príspevok</button>
+    <div id="articles-button">
+        <button id="btn-insert" @click="createArticle();">Vložiť príspevok</button> <!-- Create article after click -->
         <ArticlesForm v-model:visible="showModal"></ArticlesForm>
-    </div> -->
+    </div>
 </template>
 <script>
 import axios from "axios";
 import NavBar from '@/components/NavBar.vue'
-// import ArticlesForm from '@/components/ArticlesForm.vue'
+import ArticlesForm from '@/components/ArticlesForm.vue'
 
 export default {
     components: {
         NavBar,
-        // ArticlesForm
+        ArticlesForm
     },
     data() {
         return {
@@ -95,6 +95,29 @@ export default {
                 });
             });
         },
+        async createArticle() {
+            try {
+                // Request to create article
+                await axios.post("/api/articles", {
+                    'user_id': this.user.id,
+                });
+
+                // Show modal after successful creation
+                this.showModal = true;
+            } catch (error) {
+                console.log("Article creation error: ", error);
+
+                if (error.response) {
+                if (error.response.data.errors) {
+                    this.errorMessages = Object.values(
+                    error.response.data.errors
+                    ).flat();
+                } else {
+                    this.errorMessages = error.response.data.message || "Uknown error";
+                }
+                }
+            }
+        }
     },
     mounted() {
         this.getData();
