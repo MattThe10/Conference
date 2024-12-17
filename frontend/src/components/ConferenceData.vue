@@ -13,18 +13,32 @@
                 <!-- Modal -->
                 <div v-if="selectedItem !== null" class="modal-overlay" @click="closeModal">
                     <div class="modal-content" @click.stop>
-                        <h2>{{ conferences[selectedItem].name }}</h2>
+                        <!-- <h2>{{ conferences[selectedItem].name }}</h2>
                         <h3 for="place">Miesto</h3>
                         <p id="place">{{ conferences[selectedItem].place }}</p>
                         <h3 for="street">Ulica</h3>
                         <p id="street">{{ conferences[selectedItem].street }}</p>
                         <h3 for="city">Mesto</h3>
                         <p id="city">{{ conferences[selectedItem].city }}</p>
+                        <h3 for="postal-code">PSČ</h3>
+                        <p id="postal-code">{{ conferences[selectedItem].postal_code }}</p>
                         <h3 for="date">Dátum</h3>
                         <p id="date">{{ conferences[selectedItem].date }}</p>
                         <h3 for="misc">Poznámky</h3>
                         <p id="misc">{{ conferences[selectedItem].misc }}</p>
-                        <button @click="closeModal">Close</button>
+                        <button @click="closeModal">Close</button> -->
+                        <h2>{{ conferences[selectedItem].name }}</h2>
+                        <h3>Miesto</h3>
+                        <p>{{ conferences[selectedItem].place }}</p>
+                        <p>{{ conferences[selectedItem].street }}</p>
+                        <p>{{ conferences[selectedItem].postal_code }}</p>
+                        <p>{{ conferences[selectedItem].city }}</p>
+                        <h3>Dátum konferencie</h3>
+                        <p>{{ conferences[selectedItem].conference_date }}</p>
+                        <h3>Deadline</h3>
+                        <p>{{ conferences[selectedItem].submission_deadline }}</p>
+
+                        <router-link to="/" :class="{ disabled: isDisabled(conferences[selectedItem]) }">Nahrať príspevok</router-link>
                     </div>
                 </div>
             </div>
@@ -32,32 +46,36 @@
     </div>
 </template>
 <script>
+import axios from "axios";
 
 export default {
     data() {
         return {
-            conferences: [
-                {
-                    id: 1,
-                    name: 'Konferencia 2024',
-                    place: 'Univerzita Konštantína Filozofa',
-                    street: 'Tr. A. Hlinku 1',
-                    city: 'Nitra',
-                    date: '13.3.2024',
-                    misc: ''
-                },
-                {
-                    id: 2,
-                    name: 'Konferencia 2023',
-                    place: 'Univerzita Konštantína Filozofa',
-                    street: 'Tr. A. Hlinku 1',
-                    city: 'Nitra',
-                    date: '25.11.2023',
-                    misc: 'Učebňa THB103'
+            // conferences: [
+            //     {
+            //         id: 1,
+            //         name: 'Konferencia 2024',
+            //         place: 'Univerzita Konštantína Filozofa',
+            //         street: 'Tr. A. Hlinku 1',
+            //         city: 'Nitra',
+            //         date: '13.3.2024',
+            //         misc: ''
+            //     },
+            //     {
+            //         id: 2,
+            //         name: 'Konferencia 2023',
+            //         place: 'Univerzita Konštantína Filozofa',
+            //         street: 'Tr. A. Hlinku 1',
+            //         city: 'Nitra',
+            //         date: '25.11.2023',
+            //         misc: 'Učebňa THB103'
 
-                }
-            ],
+            //     }
+            // ],
+            conferences: [],
             selectedItem: null, // Tracks the index of the selected item
+            user: [],
+            articles: [],
         }
     },
     methods: {
@@ -67,6 +85,60 @@ export default {
         closeModal() {
             this.selectedItem = null; // Reset the selected item
         },
+        async getConferences() {
+            const conferences_response = await axios.get("/api/conferences");
+            this.conferences = conferences_response.data;
+
+            this.conferences = conferences_response.data.map(element => ({
+                id: element['id'],
+                name: 'Konferencia ' + element['end_year'] + ' / ' + element['end_year'],
+                place: element['university']['name'],
+                street: element['university']['address'],
+                city: element['university']['city'],
+                postal_code: element['university']['postal_code'],
+                conference_date: new Date(element['conference_date']).toLocaleDateString('sk-SK', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }),
+                submission_deadline: new Date(element['submission_deadline']).toLocaleDateString('sk-SK', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }),
+            }));
+        },
+        isDisabled(conference) {
+            const deadline_date = new Date(conference['submission_deadline']);
+            const current_date = new Date();
+
+            if (current_date > deadline_date) return true;
+
+            const article_exists = this.articles.some(element => 
+                element['conference']['id'] == conference['id']
+            );
+
+            if (article_exists) return true;
+
+            return false;
+        },
+        async getData() {
+            const user_response = await axios.get("/api/current_user");
+            this.user = user_response.data;
+
+            const articles_response = await axios.get("/api/articles");
+            const articles = articles_response.data;
+
+            articles.forEach(article => {
+                article['users'].forEach(user => {
+                    if (user['id'] == this.user['id']) this.articles.push(article);
+                });
+            });
+        },
+    },
+    mounted() {
+        this.getConferences();
+        this.getData();
     },
 }
 </script>
@@ -99,5 +171,10 @@ export default {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     max-width: 500px;
     width: 90%;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }
 </style>

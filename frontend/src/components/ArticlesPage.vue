@@ -4,24 +4,42 @@
     <div id="articles-wrapper">
         <div id="articles-display">
             <ul>
-                <li v-for="dummy in dummies" class="articles-li">
+                <!-- <li v-for="dummy in dummies" class="articles-li">
                     <span>{{ dummy.article_name }}</span>
                     <div class="articles-li-div">
                         <span>{{ dummy.article_author }}</span>
                         <span>{{ dummy.article_date }}</span>
                     </div>
                     <hr v-if="dummy.id !== 4">
-                </li>
+                </li> -->
 
+                <li v-for="article in articles" class="articles-li" :key="article.id" style="height: 100%;">
+                    <span>{{ article.title }}</span>
+                    <div style="font-size: 1.2rem;">
+                        <div v-for="user in article.users" :key="user.id">
+                            {{ user.name.charAt(0) }}.
+                            {{ user.surname }} 
+                        </div>
+                        <div>
+                            Konferencia {{ article.conference.start_year }} / {{ article.conference.end_year }}
+                        </div>
+                        <div>
+                            {{ article.article_status.name }}
+                        </div>
+                        <router-link to="#">Detaily</router-link>
+                    </div>
+                    <hr v-if="article.id !== 4">
+                </li>
             </ul>
         </div>
     </div>
     <div id="articles-button">
-        <button id="btn-insert" @click="showModal = true">Vložiť príspevok</button>
+        <button id="btn-insert" @click="createArticle();">Vložiť príspevok</button> <!-- Create article after click -->
         <ArticlesForm v-model:visible="showModal"></ArticlesForm>
     </div>
 </template>
 <script>
+import axios from "axios";
 import NavBar from '@/components/NavBar.vue'
 import ArticlesForm from '@/components/ArticlesForm.vue'
 
@@ -32,35 +50,78 @@ export default {
     },
     data() {
         return {
-            dummies: [
-                {
-                    id: 1,
-                    article_name: 'React JS a jeho využitie v praxi',
-                    article_author: 'Ján Dlhý',
-                    article_date: '11-12-24'
-                },
-                {
-                    id: 2,
-                    article_name: 'Vue JS a technológie',
-                    article_author: 'Patrik Šedivý',
-                    article_date: '09-03-22'
-                },
-                {
-                    id: 3,
-                    article_name: 'Angular JS a jeho miesto v korporátoch',
-                    article_author: 'Tomáš Tóth',
-                    article_date: '03-03-24'
-                },
-                {
-                    id: 4,
-                    article_name: 'Next JS ako moderný framework',
-                    article_author: 'Dávid Dlhoprstý',
-                    article_date: '14-09-23'
-                },
-            ],
+            // dummies: [
+            //     {
+            //         id: 1,
+            //         article_name: 'React JS a jeho využitie v praxi',
+            //         article_author: 'Ján Dlhý',
+            //         article_date: '11-12-24'
+            //     },
+            //     {
+            //         id: 2,
+            //         article_name: 'Vue JS a technológie',
+            //         article_author: 'Patrik Šedivý',
+            //         article_date: '09-03-22'
+            //     },
+            //     {
+            //         id: 3,
+            //         article_name: 'Angular JS a jeho miesto v korporátoch',
+            //         article_author: 'Tomáš Tóth',
+            //         article_date: '03-03-24'
+            //     },
+            //     {
+            //         id: 4,
+            //         article_name: 'Next JS ako moderný framework',
+            //         article_author: 'Dávid Dlhoprstý',
+            //         article_date: '14-09-23'
+            //     },
+            // ],
+            user: [],
+            articles: [],
             showModal: false,
         }
-    }
+    },
+    methods: {
+        async getData() {
+            const user_response = await axios.get("/api/current_user");
+            this.user = user_response.data;
+
+            const articles_response = await axios.get("/api/articles");
+            const articles = articles_response.data;
+
+            articles.forEach(article => {
+                article['users'].forEach(user => {
+                    if (user['id'] == this.user['id']) this.articles.push(article);
+                });
+            });
+        },
+        async createArticle() {
+            try {
+                // Request to create article
+                await axios.post("/api/articles", {
+                    'user_id': this.user.id,
+                });
+
+                // Show modal after successful creation
+                this.showModal = true;
+            } catch (error) {
+                console.log("Article creation error: ", error);
+
+                if (error.response) {
+                if (error.response.data.errors) {
+                    this.errorMessages = Object.values(
+                    error.response.data.errors
+                    ).flat();
+                } else {
+                    this.errorMessages = error.response.data.message || "Uknown error";
+                }
+                }
+            }
+        }
+    },
+    mounted() {
+        this.getData();
+    },
 }
 </script>
 

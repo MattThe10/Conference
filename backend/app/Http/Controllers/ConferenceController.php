@@ -19,7 +19,7 @@ class ConferenceController extends Controller
 
     public function index()
     {
-        $conferences = Conference::all();
+        $conferences = Conference::with(['university'])->get();
 
         return response()->json($conferences);
     }

@@ -47,7 +47,7 @@ class ArticleController extends Controller
         $article = Article::create([
             'title'                 => $validated['title'] ?? 'New Article',
             'article_statuses_id'   => $validated['article_status_id'] ?? ArticleStatus::where('key', 'draft')->first()->id,
-            'conferences_id'        => $validated['conference_id'] ?? Conference::latest()->first()->id,
+            'conferences_id'        => $validated['conference_id'] ?? Conference::orderBy('id', 'desc')->first()->id,
         ]);
 
         $user->articles()->attach($article->id);
@@ -74,7 +74,7 @@ class ArticleController extends Controller
             $article->update([
                 'title'                 => $validated['title'],
                 'article_statuses_id'   => $validated['article_status_id'] ?? ArticleStatus::where('key', 'submitted')->first()->id,
-                'conferences_id'        => $validated['conference_id'] ?? Conference::latest()->first()->id,
+                'conferences_id'        => $validated['conference_id'] ?? Conference::orderBy('id', 'desc')->first()->id,
             ]);
 
             foreach (['file_pdf', 'file_word'] as $file_type) {
