@@ -20,14 +20,24 @@ export default {
                 },
                 {
                     id: 2,
-                    name: "Príspevky",
+                    name: "Moje príspevky",
                     route: '/articles',
                 },
                 {
                     id: 3,
+                    name: "Recenzovanie",
+                    route: '/articles_for_review',
+                },
+                {
+                    id: 4,
                     name: "Profil",
                     route: '/profile'
-                }
+                },
+                {
+                    id: 5,
+                    name: "Admin",
+                    route: '/admin/manage/users',
+                },
             ],
         };
     },
@@ -60,5 +70,13 @@ export default {
 
 .navbar-ul-li a:visited {
     color: #fefae0
+}
+
+
+
+
+/* Added */
+.navbar-ul-li a {
+    text-decoration: none;
 }
 </style>

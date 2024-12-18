@@ -38,7 +38,9 @@
                         <h3>Deadline</h3>
                         <p>{{ conferences[selectedItem].submission_deadline }}</p>
 
-                        <router-link to="/" :class="{ disabled: isDisabled(conferences[selectedItem]) }">Nahrať príspevok</router-link>
+                        <button @click="createArticle(conferences[selectedItem].id)" :class="{ disabled: isDisabled(conferences[selectedItem])}">
+                            Nahrať príspevok
+                        </button>
                     </div>
                 </div>
             </div>
@@ -134,6 +136,30 @@ export default {
                     if (user['id'] == this.user['id']) this.articles.push(article);
                 });
             });
+        },
+        async createArticle(conference_id) {
+            try {
+                 const response = await axios.post('/api/articles',{
+                    user_id: this.user.id,
+                    conference_id: conference_id,
+                });
+
+                console.log('Successfull store');
+
+                const article_id = response.data.article.id;
+
+                this.$router.push(`/conferences/${conference_id}/articles/${article_id}/update`);
+            } catch (error) {
+                console.log('Update error: ', error);
+
+                if (error.response) {
+                    if (error.response.data.errors) {
+                        this.errorMessages = Object.values(error.response.data.errors).flat();
+                    } else {
+                        this.errorMessages = [error.response.data.message] || ['Uknown error'];
+                    }
+                }
+            }
         },
     },
     mounted() {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <NavBar></NavBar>
-        <h2 class="articles-header">Moje príspevky</h2>
+        <h2 class="articles-header">Recenzuj</h2>
         <div id="articles-wrapper">
             <div id="articles-display">
                 <ul>
@@ -13,23 +13,22 @@
                         </div>
                         <hr v-if="dummy.id !== 4">
                     </li> -->
-
-                    <li v-for="article in articles" class="articles-li" :key="article.id" style="height: 100%;">
-                        <span>{{ article.title }}</span>
+                    <li v-for="review in user.reviews" class="articles-li" :key="review.id" style="height: 100%;">
+                        <span>{{ review.article.title }}</span>
                         <div style="font-size: 1.2rem;">
-                            <div v-for="user in article.users" :key="user.id">
+                            <div v-for="user in review.article.users" :key="user.id">
                                 {{ user.name.charAt(0) }}.
                                 {{ user.surname }} 
                             </div>
                             <div>
-                                Konferencia {{ article.conference.start_year }} / {{ article.conference.end_year }}
+                                Konferencia {{ review.article.conference.start_year }} / {{ review.article.conference.end_year }}
                             </div>
                             <div>
-                                {{ article.article_status.name }}
+                                {{ review.article.article_status.name }}
                             </div>
-                            <router-link :to="{ path: `/articles/${article.id}` }">Detaily</router-link>
+                            <router-link :to="{ path: `/articles_for_review/${review.article.id}` }">Detaily</router-link>
                         </div>
-                        <hr v-if="article.id !== 4">
+                        <hr v-if="review.article.id !== 4">
                     </li>
                 </ul>
             </div>
@@ -80,7 +79,7 @@ export default {
     methods: {
         async getData() {
             const user_response = await axios.get("/api/current_user");
-            this.user = user_response.data;
+            this.user = user_response.data;console.log(this.user);console.log(this.user);
 
             const articles_response = await axios.get("/api/articles");
             const articles = articles_response.data;

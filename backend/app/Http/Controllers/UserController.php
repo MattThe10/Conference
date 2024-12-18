@@ -24,7 +24,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::all();
+        $users = User::with(['role', 'faculty', 'faculty.university', 'reviews', 'articles'])->get();
 
         return response()->json($users);
     }
@@ -41,7 +41,8 @@ class UserController extends Controller
 
     public function getCurrentUser()
     {
-        $user = Auth::user();
+        $user = User::with(['role', 'faculty', 'faculty.university', 'reviews', 'articles', 'reviews.article', 'reviews.article.conference', 'reviews.article.article_status'])
+            ->find(Auth::id());
 
         return response()->json($user);
     }

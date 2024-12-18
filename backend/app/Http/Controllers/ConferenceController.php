@@ -56,10 +56,10 @@ class ConferenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'start_year'          => ['required', 'datetime'],
-		    'end_year'            => ['required', 'datetime'],
-		    'conference_date'     => ['required', 'datetime'],
-		    'submission_deadline' => ['required', 'datetime'],
+            'start_year'          => ['required', 'integer'],
+		    'end_year'            => ['required', 'integer'],
+		    'conference_date'     => ['required', 'date'],
+		    'submission_deadline' => ['required', 'date'],
 		    'location_id'         => ['required', 'exists:universities,id'],
         ]);
 

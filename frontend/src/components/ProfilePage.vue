@@ -1,41 +1,47 @@
 <template>
-    <NavBar></NavBar>
-    <div class="main-wrapper">
-        <form action="" id="profile-form" @submit.prevent="handleSubmit">
-            <div class="profile-card">
-                <h2>Upraviť profil</h2>
-                <div class="card-wrapper">
-                    <label for="name">Meno</label>
-                    <input type="text" id="name" v-model="name">
-                    <label for="surname">Priezvisko</label>
-                    <input type="text" id="surname" v-model="surname">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" v-model="email">
-                    <label for="university-faculty-inp">Univerzita a Fakulta</label>
-                    <select id="university-faculty-inp" v-model="faculty_id" required>
-                        <optgroup v-for="university in universities" :key="university.id" :label="university.name">
-                            <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
-                                {{ faculty.name }}
-                            </option>
-                        </optgroup>
-                    </select>
+    <div>
+        <NavBar></NavBar>
+        <div class="main-wrapper">
+            <form action="" id="profile-form" @submit.prevent="handleSubmit">
+                <div class="edit-subform">
+                    <div class="profile-card">
+                        <h2>Upraviť profil</h2>
+                        <div class="card-wrapper">
+                            <label for="name">Meno</label>
+                            <input type="text" id="name" v-model="name">
+                            <label for="surname">Priezvisko</label>
+                            <input type="text" id="surname" v-model="surname">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" v-model="email">
+                            <label for="university-faculty-inp">Univerzita a Fakulta</label>
+                            <select id="university-faculty-inp" v-model="faculty_id" required>
+                                <optgroup v-for="university in universities" :key="university.id" :label="university.name">
+                                    <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
+                                        {{ faculty.name }}
+                                    </option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="password-card">
+                        <h2>Zmeniť heslo</h2>
+                        <div class="card-wrapper">
+                            <label for="new-password">Nové heslo</label>
+                            <input type="password" id="new-password" v-model="new_password">
+                            <label for="confirm-password">Potvrdiť heslo</label>
+                            <input type="password" id="confirm-password" v-model="new_password_confirmation">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="password-card">
-                <h2>Zmeniť heslo</h2>
-                <div class="card-wrapper">
-                    <label for="current-password">Staré heslo</label>
+                <div class="confirm-subform">
+                    <label for="current-password">Aktuálne heslo</label>
                     <input type="password" id="current-password" v-model="current_password">
-                    <label for="new-password">Nové heslo</label>
-                    <input type="password" id="new-password" v-model="new_password">
-                    <label for="confirm-password">Potvrdiť heslo</label>
-                    <input type="password" id="confirm-password" v-model="new_password_confirmation">
                 </div>
+            </form>
+            <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}</p>
+            <div>
+                <button type="submit" id="btn-submit" form="profile-form">Uložiť</button>
             </div>
-        </form>
-        <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}</p>
-        <div>
-            <button type="submit" id="btn-submit" form="profile-form">Uložiť</button>
         </div>
     </div>
 </template>
@@ -136,13 +142,13 @@ export default {
 </script>
 
 <style scoped>
-.main-wrapper {
+/* .main-wrapper {
     width: 50rem;
     height: 30rem;
     background-color: #fff;
     border-radius: 20px;
     margin: 2rem auto;
-}
+} */
 
 .profile-card,
 .password-card,
@@ -180,12 +186,12 @@ export default {
     gap: 0.2rem;
 }
 
-#profile-form {
+/* #profile-form {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 5rem;
-}
+} */
 
 #btn-submit {
     padding: 10px;
@@ -198,5 +204,40 @@ export default {
     position: relative;
     top: 1rem;
     left: 19rem;
+}
+
+
+
+
+
+
+/* Added styles */
+.main-wrapper {
+    width: 50rem;
+    height: 34rem;
+    background-color: #fff;
+    border-radius: 20px;
+    margin: 2rem auto;
+}
+
+#profile-form .edit-subform {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5rem;
+    margin-bottom: 16px;
+}
+
+#profile-form .confirm-subform {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+#profile-form .confirm-subform input {
+    width: 15rem;
+    height: 1.5rem;
+    margin-left: 8px;
 }
 </style>
