@@ -64,9 +64,6 @@ class Review extends Model
 
 	public function index(Request $request) 
 	{
-		// Default number of records per page 
-		$per_page = 10; 
-		
 		// Initialize the query with a relationship to 'university' 
 		$reviews = Review::query();
 		//	->with(['university']); 
@@ -89,15 +86,8 @@ class Review extends Model
 			});
 		}	
 					
-		//Determine whether to paginate or return all records 
-		if ($request->has('search') || $request->has('page')) { 
-			// Paginate results if 'search' or 'page' is present in the request 
-			$reviews = $reviews->paginate($per_page); 
-		} else { 
-			//Return all results if neither 'search' nor 'page' is specified 
-			$reviews = $reviews->get(); 
-		}
-		
+		$reviews = $reviews->get(); 
+				
 		// Return the resulting reviews as a JSON response 
 		return response()->json($reviews);
 	}

@@ -39,9 +39,6 @@ class ArticleStatus extends Model
 
 	public function index(Request $request) 
 	{
-		// Default number of records per page 
-		$per_page = 10; 
-		
 		// Initialize the query  
 		$article_statuses = ArticleStatus::query(); 
 			
@@ -58,15 +55,8 @@ class ArticleStatus extends Model
 			});
 		}	
 					
-		//Determine whether to paginate or return all records 
-		if ($request->has('search') || $request->has('page')) { 
-			// Paginate results if 'search' or 'page' is present in the request 
-			$article_statuses = $article_statuses->paginate($per_page); 
-		} else { 
-			//Return all results if neither 'search' nor 'page' is specified 
-			$article_statuses = $article_statuses->get(); 
-		}
-		
+		$article_statuses = $article_statuses->get(); 
+				
 		// Return the resulting article_statuses as a JSON response 
 		return response()->json($article_statuses);
 	}

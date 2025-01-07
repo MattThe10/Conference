@@ -59,9 +59,6 @@ class Conference extends Model
 
 	public function index(Request $request) 
 	{
-		// Default number of records per page 
-		$per_page = 10; 
-		
 		// Initialize the query with a relationship to 'university' 
 		$conferences = Conference::query();
 		//	->with(['university']); 
@@ -79,16 +76,9 @@ class Conference extends Model
 			});				
 		}	
 					
-		//Determine whether to paginate or return all records 
-		if ($request->has('search') || $request->has('page')) { 
-			// Paginate results if 'search' or 'page' is present in the request 
-			$conferences = $conferences->paginate($per_page); 
-		} else { 
-			//Return all results if neither 'search' nor 'page' is specified 
-			$conferences = $conferences->get(); 
-		}
-		
-		// Return the resulting conferences as a JSON response 
-		return response()->json($conferences);
+	$conferences = $conferences->get(); 
+			
+	// Return the resulting conferences as a JSON response 
+	return response()->json($conferences);
 	}
 }

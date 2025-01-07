@@ -39,9 +39,6 @@ class Role extends Model
 
 	public function index(Request $request) 
 	{
-		// Default number of records per page 
-		$per_page = 10; 
-		
 		// Initialize the query  
 		$roles = Role::query(); 
 			
@@ -58,15 +55,8 @@ class Role extends Model
 			});
 		}	
 					
-		//Determine whether to paginate or return all records 
-		if ($request->has('search') || $request->has('page')) { 
-			// Paginate results if 'search' or 'page' is present in the request 
-			$roles = $roles->paginate($per_page); 
-		} else { 
-			//Return all results if neither 'search' nor 'page' is specified 
-			$roles = $roles->get(); 
-		}
-		
+		$roles = $roles->get(); 
+				
 		// Return the resulting roles as a JSON response 
 		return response()->json($roles);
 	}

@@ -57,9 +57,6 @@ class Faculty extends Model
 
 	public function index(Request $request) 
 	{
-		// Default number of records per page 
-		$per_page = 10; 
-		
 		// Initialize the query with a relationship to 'university' 
 		$faculties = Faculty::query() 
 			->with(['university']); 
@@ -83,15 +80,8 @@ class Faculty extends Model
 			});
 		}	
 					
-		//Determine whether to paginate or return all records 
-		if ($request->has('search') || $request->has('page')) { 
-			// Paginate results if 'search' or 'page' is present in the request 
-			$faculties = $faculties->paginate($per_page); 
-		} else { 
-			//Return all results if neither 'search' nor 'page' is specified 
-			$faculties = $faculties->get(); 
-		}
-		
+		$faculties = $faculties->get(); 
+				
 		// Return the resulting faculties as a JSON response 
 		return response()->json($faculties);
 	}
