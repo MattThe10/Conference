@@ -20,12 +20,31 @@ use ZipArchive;
 
 class ArticleController extends Controller
 {
-    public function index()
-    {
-        $articles = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
+    public function index(Request $request) 
+	{
+		// Initialize the query  
+        //$articles = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
 
-        return response()->json($articles);
-    }
+		$articles = Article::query();
+		//	->with(['conference']); 
+			
+		//Check if there a 'search' parameter in the request 
+		if ($request->has('search') && $request->search != null) {
+		
+			// Convert the search term to lowercase for case-insensitive matching 
+			$search = strtolower($request->search); 
+			
+			// Apply filtering based on the search term 
+			$articles = $articles->where(function ($query) use ($search) {
+				$query->whereRaw('LOWER(title) LIKE ?', ['%' . $search . '%']); // Filter by title
+			});
+		}	
+					
+		$articles = $articles->get(); 
+				
+		// Return the resulting articles as a JSON response 
+		return response()->json($articles);
+	}
 
     public function show($article_id)
     {
