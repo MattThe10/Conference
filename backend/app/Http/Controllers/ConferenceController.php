@@ -16,29 +16,14 @@ class ConferenceController extends Controller
     | returns them as a JSON response.
     |
     */
-	public function index(Request $request) 
-	{
-		// Initialize the query
-		$conferences = Conference::query();
-			
-		//Check if there a 'search' parameter in the request 
-		if ($request->has('search') && $request->search !=	 null) {
-		
-			// Apply filtering based on the search term 
-			$conferences = $conferences->where(function ($query) use ($search) {
-				$query->where('start_year', 'LIKE', '%' . $search . '%') // start_year
-					  ->orWhere('end_year', 'LIKE', '%' . $search . '%') // end_year
-					  ->orWhereHas('location', function ($query) use ($search) {
-						$query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']); // Filter by related university name
-					});
-			});				
-		}	
-					
-	$conferences = $conferences->get(); 
-			
-	// Return the resulting conferences as a JSON response 
-	return response()->json($conferences);
-	}
+
+    public function index()
+    {
+        $conferences = Conference::with(['university'])->get();
+
+        return response()->json($conferences);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Retrieve a specific conference by its ID

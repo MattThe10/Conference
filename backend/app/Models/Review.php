@@ -61,4 +61,34 @@ class Review extends Model
 					->withPivot('id', 'rating', 'status')
 					->withTimestamps();
 	}
+
+	public function index(Request $request) 
+	{
+		// Initialize the query with a relationship to 'university' 
+		$reviews = Review::query();
+		//	->with(['university']); 
+			
+		//Check if there a 'search' parameter in the request 
+		if ($request->has('search') && $request->search !=	 null) {
+		
+			// Convert the search term to lowercase for case-insensitive matching 
+			$search = strtolower($request->search); 
+			
+			// Apply filtering based on the search term 
+			$reviews = $reviews->where(function ($query) use ($search) {
+				$query->WhereHas('article', function ($query) use ($search) {
+						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related article name
+					})					
+					->orWhereHas('user', function ($query) use ($search) {
+						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related user name
+						$query->whereRaw('LOWER(surname) LIKE ?', ['%' . $search . '%']); // Filter by related user surname
+					});
+			});
+		}	
+					
+		$reviews = $reviews->get(); 
+				
+		// Return the resulting reviews as a JSON response 
+		return response()->json($reviews);
+	}
 }

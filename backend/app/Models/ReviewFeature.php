@@ -42,4 +42,28 @@ class ReviewFeature extends Model
 					->withPivot('id', 'rating', 'status')
 					->withTimestamps();
 	}
+
+	public function index(Request $request) 
+	{
+		// Initialize the query  
+		$review_features = ReviewFeature::query()
+			->with(['review']); 
+			
+		//Check if there a 'search' parameter in the request 
+		if ($request->has('search') && $request->search != null) {
+		
+			// Convert the search term to lowercase for case-insensitive matching 
+			$search = strtolower($request->search); 
+			
+			// Apply filtering based on the search term 
+			$review_features = $review_features->where(function ($query) use ($search) {
+				$query->whereRaw('LOWER(content) LIKE ?', ['%' . $search . '%']); // Filter by content
+			});
+		}	
+					
+		$review_features = $review_features->get(); 
+				
+		// Return the resulting review_features as a JSON response 
+		return response()->json($review_features);
+	}
 }

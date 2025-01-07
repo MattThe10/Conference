@@ -16,36 +16,14 @@ class FacultyController extends Controller
     | returns them as a JSON response.
     |
     */
-	public function index(Request $request) 
-	{
-		// Initialize the query with a relationship to 'university' 
-		$faculties = Faculty::query() 
-			->with(['university']); 
-			
-		//Check if there a 'search' parameter in the request 
-		if ($request->has('search') && $request->search !=	 null) {
-		
-			// Convert the search term to lowercase for case-insensitive matching 
-			$search = strtolower($request->search); 
-			
-			// Apply filtering based on the search term 
-			$faculties = $faculties->where(function ($query) use ($search) {
-				$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by name
-					->orwhereRaw('LOWER(address) LIKE?', ['%' . $search . '%']) // Filter by address 
-					->orwhereRaw('LOWER(city) LIKE ?', ['%'. $search . '%']) // Filter by city 
-					->orWhereRaw('LOWER(postal_code) LIKE ?', ['%' . $search . '%']) // Filter by postal code 
-					->orWhereRaw('LOWER(country) LIKE ?', ['%' . $search . '%']) // Filter by country
-					->orWhereHas('university', function ($query) use ($search) {
-						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related university name
-					});	
-			});
-		}	
-					
-		$faculties = $faculties->get(); 
-				
-		// Return the resulting faculties as a JSON response 
-		return response()->json($faculties);
-	}
+
+    public function index()
+    {
+        $faculties = Faculty::all();
+
+        return response()->json($faculties);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Retrieve a specific faculty by its ID
