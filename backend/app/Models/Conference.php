@@ -56,4 +56,39 @@ class Conference extends Model
 	{
 		return $this->hasMany(Article::class, 'conferences_id');
 	}
+
+	public function index(Request $request) 
+	{
+		// Default number of records per page 
+		$per_page = 10; 
+		
+		// Initialize the query with a relationship to 'university' 
+		$conferences = Conference::query();
+		//	->with(['university']); 
+			
+		//Check if there a 'search' parameter in the request 
+		if ($request->has('search') && $request->search !=	 null) {
+		
+			// Apply filtering based on the search term 
+			$conferences = $conferences->where(function ($query) use ($search) {
+				$query->where('start_year', 'LIKE', '%' . $search . '%') // start_year
+					  ->orWhere('end_year', 'LIKE', '%' . $search . '%') // end_year
+					  ->orWhereHas('location', function ($query) use ($search) {
+						$query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']); // Filter by related university name
+					});
+			});				
+		}	
+					
+		//Determine whether to paginate or return all records 
+		if ($request->has('search') || $request->has('page')) { 
+			// Paginate results if 'search' or 'page' is present in the request 
+			$conferences = $conferences->paginate($per_page); 
+		} else { 
+			//Return all results if neither 'search' nor 'page' is specified 
+			$conferences = $conferences->get(); 
+		}
+		
+		// Return the resulting conferences as a JSON response 
+		return response()->json($conferences);
+	}
 }

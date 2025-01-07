@@ -74,4 +74,44 @@ class User extends Authenticatable
 					->withPivot('id')
 					->withTimestamps();
 	}
+
+	public function index(Request $request) 
+	{
+		// Default number of records per page 
+		$per_page = 10; 
+		
+		// Initialize the query  
+		$users = User::query();
+		//	->with(['conference']); 
+			
+		//Check if there a 'search' parameter in the request 
+		if ($request->has('search') && $request->search != null) {
+		
+			// Convert the search term to lowercase for case-insensitive matching 
+			$search = strtolower($request->search); 
+			
+			// Apply filtering based on the search term 
+			$users = $users->where(function ($query) use ($search) {
+				$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by name
+					->orwhereRaw('LOWER(surname) LIKE?', ['%' . $search . '%']) // Filter by surname 
+					->orwhereRaw('LOWER(email) LIKE ?', ['%'. $search . '%']) // Filter by email 
+					->orWhereHas('faculty', function ($query) use ($search) {
+						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related faculty name
+					});
+			});
+		}	
+					
+		//Determine whether to paginate or return all records 
+		if ($request->has('search') || $request->has('page')) { 
+			// Paginate results if 'search' or 'page' is present in the request 
+			$users = $users->paginate($per_page); 
+		} else { 
+			//Return all results if neither 'search' nor 'page' is specified 
+			$users = $users->get(); 
+		}
+		
+		// Return the resulting users as a JSON response 
+		return response()->json($users);
+	}
+
 }
