@@ -11,4 +11,4 @@ COPY . ./
 
 RUN chown -R node:node /app/node_modules
 
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]
