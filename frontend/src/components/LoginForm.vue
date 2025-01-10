@@ -1,9 +1,5 @@
 <template>
-  <p
-    v-for="(errorMessage, index) in errorMessages"
-    :key="index"
-    class="warning warning-par"
-  >
+  <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">
     {{ errorMessage }}
   </p>
   <div class="wrapper">
@@ -15,23 +11,11 @@
       <form action="" @submit.prevent="handleLogin" id="basic-form">
         <div class="wrapper-inp">
           <label for="email-inp">Login</label>
-          <input
-            type="email"
-            id="email-inp"
-            class="inp"
-            v-model="email"
-            required
-          />
+          <input type="email" id="email-inp" class="inp" v-model="email" required />
         </div>
         <div class="wrapper-inp">
           <label for="pass-inp">Heslo</label>
-          <input
-            type="password"
-            id="pass-inp"
-            class="inp"
-            v-model="password"
-            required
-          />
+          <input type="password" id="pass-inp" class="inp" v-model="password" required />
         </div>
         <button type="submit" class="green-btn">Prihlásiť sa</button>
       </form>
@@ -41,19 +25,13 @@
       </p>
     </div>
     <div class="wrapper-right">
-      <img
-        src="@/assets/office-2.jpg"
-        class="image"
-        alt="Conference desk with people"
-      />
+      <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people" />
     </div>
   </div>
 </template>
 
 <script>
 import "@/styles/styles.css";
-// import { useLoginStore } from './stores/formData'
-// import { reactive } from 'vue'
 import axios from "axios";
 
 export default {
@@ -61,8 +39,6 @@ export default {
     return {
       email: "",
       password: "",
-      dummy_email: "admin@admin.com",
-      dummy_password: "admin",
       wrongCredentials: false,
       errorMessages: [],
     };

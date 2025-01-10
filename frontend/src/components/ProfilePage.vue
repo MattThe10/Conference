@@ -33,9 +33,10 @@
                 </div>
             </div>
         </form>
-        <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}</p>
-        <div>
-            <button type="submit" id="btn-submit" form="profile-form">Uložiť</button>
+        <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}
+        </p>
+        <div class="btn-div">
+            <button type="submit" class="btn" id="btn-submit" form="profile-form">Uložiť</button>
         </div>
     </div>
 </template>
@@ -102,7 +103,7 @@ export default {
         },
         async handleSubmit() {
             try {
-                await axios.post('/api/update_current_user',{
+                await axios.post('/api/update_current_user', {
                     name: this.name,
                     surname: this.surname,
                     email: this.email,
@@ -187,12 +188,12 @@ export default {
     gap: 5rem;
 }
 
-#btn-submit {
+.btn {
     padding: 10px;
     font-size: 2rem;
     background-color: #52b69a;
     color: #fefae0;
-    border: 2px solid #52796f;
+    border: none;
     margin-top: 1rem;
     border-radius: 10px;
     position: relative;
