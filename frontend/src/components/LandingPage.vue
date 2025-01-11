@@ -1,47 +1,49 @@
 <template>
-    <NavBar></NavBar>
     <div>
-        <h1 class="conference-header">Zoznam konferencií</h1>
-        <div class="conference-wrapper">
-            <div class="conference-display">
-                <ConferenceItem v-for="conference in conferences" key="conference.id" class="conference-item"
-                    :conference="conference" @openForm="openForm"></ConferenceItem>
-            </div>
-            <div v-if="selectedConference" class="modal-backdrop conference-button" @click="closeForm">
-                <div class="modal-content" @click.stop>
-                    <button class="close-btn" @click="closeForm">✖</button>
-                    <ArticlesForm :conference="selectedConference" @close="closeForm" />
+        <NavBar></NavBar>
+        <div>
+            <h1 class="conference-header">Zoznam konferencií</h1>
+            <div class="conference-wrapper">
+                <div class="conference-display">
+                    <ConferenceItem v-for="conference in conferences" :key="conference.id" class="conference-item"
+                        :conference="conference" @openForm="openForm"></ConferenceItem>
+                </div>
+                <div v-if="selectedConference" class="modal-backdrop conference-button" @click="closeForm">
+                    <div class="modal-content" @click.stop>
+                        <button class="close-btn" @click="closeForm">✖</button>
+                        <ArticlesForm :conference="selectedConference" @close="closeForm" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="user-wrapper">
-        <div id="user-details">
-            <div>
-                <p>Rola: </p>
-                <p>{{ role.name }}</p>
+        <div id="user-wrapper">
+            <div id="user-details">
+                <div>
+                    <p>Rola: </p>
+                    <p>{{ role.name }}</p>
+                </div>
+                <div>
+                    <p>Meno a priezvisko: </p>
+                    <p>{{ user.name }}</p>
+                    <p>{{ user.surname }}</p>
+                </div>
+                <div>
+                    <p>Email: </p>
+                    <p> {{ user.email }}</p>
+                </div>
+                <!-- Zobrazia sa iba ak su student alebo reviewer -->
+                <div v-if="role == 'student' || role == 'reviewer'">
+                    <p>Univerzita: </p>
+                    <p>{{ university.name }}</p>
+                </div>
+                <div v-if="role == 'student' || role == 'reviewer'">
+                    <p>Fakulta: </p>
+                    <p>{{ faculty.name }}</p>
+                </div>
             </div>
             <div>
-                <p>Meno a priezvisko: </p>
-                <p>{{ user.name }}</p>
-                <p>{{ user.surname }}</p>
+                <button @click="logout()" id="btn-logout">Odhlásiť sa</button>
             </div>
-            <div>
-                <p>Email: </p>
-                <p> {{ user.email }}</p>
-            </div>
-            <!-- Zobrazia sa iba ak su student alebo reviewer -->
-            <div v-if="role == 'student' || role == 'reviewer'">
-                <p>Univerzita: </p>
-                <p>{{ university.name }}</p>
-            </div>
-            <div v-if="role == 'student' || role == 'reviewer'">
-                <p>Fakulta: </p>
-                <p>{{ faculty.name }}</p>
-            </div>
-        </div>
-        <div>
-            <button @click="logout()" id="btn-logout">Odhlásiť sa</button>
         </div>
     </div>
 </template>
@@ -98,6 +100,31 @@ export default {
                 console.log("Error loading user data: ", error);
             }
         },
+        async getConferences() {
+            const conferences_response = await axios.get("/api/conferences");
+            this.conferences = conferences_response.data;
+
+            this.conferences = conferences_response.data.map(element => ({
+                id: element['id'],
+                name: 'Konferencia ' + element['start_year'] + ' / ' + element['end_year'],
+                place: element['university']['name'],
+                street: element['university']['address'],
+                city: element['university']['city'],
+                postal_code: element['university']['postal_code'],
+                conference_date_sk: new Date(element['conference_date']).toLocaleDateString('sk-SK', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }),
+                submission_deadline_sk: new Date(element['submission_deadline']).toLocaleDateString('sk-SK', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }),
+                conference_date: new Date(element['conference_date']),
+                submission_deadline: new Date(element['submission_deadline']),
+            }));
+        },
         async logout() {
             try {
                 console.log("Trying to logout...");
@@ -111,15 +138,41 @@ export default {
                 console.log("Error while logout: ", error);
             }
         },
+        async storeArticle(conference_id) {
+            try {console.log(conference_id);
+                 await axios.post('/api/articles',{
+                    user_id: this.user.id,
+                    conference_id: conference_id,
+                });
+
+                console.log('Successfull store');
+            } catch (error) {
+                console.log('Store error: ', error);
+
+                if (error.response) {
+                    if (error.response.data.errors) {
+                        this.errorMessages = Object.values(error.response.data.errors).flat();
+                    } else {
+                        this.errorMessages = [error.response.data.message] || ['Uknown error'];
+                    }
+                }
+            }
+        },
         openForm(conference) {
+            // Sem vložiť kód pre kontrolu či sa chce user naozaj zúčastniť konferencie
+
+            this.storeArticle(conference.id);
+
             this.selectedConference = conference;
         },
         closeForm() {
             this.selectedConference = null;
+            window.location.reload();
         },
     },
     mounted() {
         this.getUser();
+        this.getConferences();
     },
 };
 </script>

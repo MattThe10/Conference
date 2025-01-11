@@ -25,8 +25,8 @@ class ArticleController extends Controller
 		// Initialize the query  
         //$articles = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
 
-		$articles = Article::query();
-		//	->with(['conference']); 
+		$articles = Article::query()
+		    ->with(['conference', 'reviews', 'users', 'article_status']); 
 			
 		//Check if there a 'search' parameter in the request 
 		if ($request->has('search') && $request->search != null) {
@@ -54,7 +54,7 @@ class ArticleController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {Log::info($request);
         $validated = $request->validate([
             'title'             => ['string', 'max:255'],
             'article_status_id' => ['integer', 'exists:article_statuses,id'],
@@ -77,14 +77,15 @@ class ArticleController extends Controller
     }
 
     public function update(Request $request, $article_id)
-    {
+    {Log::info($request);
         $validated = $request->validate([
             'title'             => ['required', 'string', 'max:255'],
-            'file_pdf'          => ['required', 'file', 'mimes:pdf'],
-            'file_word'         => ['required', 'file', 'mimes:doc,docx'],
-            'user_ids'          => ['array', 'exists:users,id'],
+            'file_pdf'          => ['file', 'mimes:pdf'],
+            'file_word'         => ['file', 'mimes:doc,docx'],
+            'user_ids'          => ['array'],
+            'user_ids.*'        => ['exists:users,id'],
             'article_status_id' => ['integer', 'exists:article_statuses,id'],
-            'conference_id'     => ['integer', 'exists:conferences,id'],
+            'conference_id'     => ['required', 'integer', 'exists:conferences,id'],
         ]);
 
         DB::beginTransaction();
@@ -93,18 +94,24 @@ class ArticleController extends Controller
             $article->update([
                 'title'                 => $validated['title'],
                 'article_statuses_id'   => $validated['article_status_id'] ?? ArticleStatus::where('key', 'submitted')->first()->id,
-                'conferences_id'        => $validated['conference_id'] ?? Conference::orderBy('id', 'desc')->first()->id,
+                'conferences_id'        => $validated['conference_id'],
             ]);
 
             foreach (['file_pdf', 'file_word'] as $file_type) {
-                $file = $validated[$file_type];
-                $file_path = $file->store('documents', 'public');
-                Document::create([
-                    'name'          => $file->getClientOriginalName(),
-                    'path'          => $file_path,
-                    'ext'           => $file->getClientOriginalExtension(),
-                    'articles_id'   => $article->id,
-                ]);
+                if (isset($validated[$file_type])) {
+                    $file = $validated[$file_type];Log::info($file->getClientOriginalName());
+                    $file_path = $file->store('documents', 'public');
+                    Document::updateOrCreate(
+                        [
+                            'ext'           => $file->getClientOriginalExtension(),
+                            'articles_id'   => $article->id,
+                        ],
+                        [
+                            'name'          => $file->getClientOriginalName(),
+                            'path'          => $file_path,
+                        ]
+                    );
+                }
             }
 
             if (isset($validated['user_ids'])) {
