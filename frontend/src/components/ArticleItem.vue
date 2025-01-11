@@ -1,13 +1,19 @@
 <template>
-    <div class="article-item" @click="$emit('openDetails', article)">
-        <h3>{{ article.title }}</h3>
+    <div class="article-item" @click="$emit('openDetails', article, source)">
+        <h3>
+            {{ article.title }}
+            <span v-if="source == 'articles'">
+                - {{ article.status }}
+            </span>
+        </h3>
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        article: Object
+        article: Object,
+        source: String,
     }
 }
 </script>

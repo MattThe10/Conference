@@ -5,6 +5,10 @@ import RegisterForm from '@/components/RegisterForm.vue'
 import LandingPage from '@/components/LandingPage.vue'
 import ArticlesPage from '@/components/ArticlePage.vue'
 import ProfilePage from '@/components/ProfilePage.vue'
+import ArticleDetails from '@/components/ArticleDetails.vue'
+import ArticleEditForm from '@/components/ArticleEditForm.vue'
+import ReviewDetails from '@/components/ReviewDetails.vue'
+// import ReviewForm from '@/components/ReviewForm.vue'
 
 import { checkAuth } from '@/auth';
 
@@ -32,7 +36,29 @@ const routes = [
         {
             path: '/articles',
             name: 'ArticlesPage',
-            component: ArticlesPage
+            component: ArticlesPage,
+            children: [
+                {
+                    path: ':articleId',
+                    name: 'ArticleDetails',
+                    component: ArticleDetails,
+                },
+                {
+                    path: ':articleId/edit',
+                    name: 'ArticleEditForm',
+                    component: ArticleEditForm,
+                },
+                {
+                    path: ':articleId/reviews/:reviewId',
+                    name: 'ReviewDetails',
+                    component: ReviewDetails,
+                },
+                // {
+                //     path: ':articleId/reviews/:reviewId/edit',
+                //     name: 'ReviewForm',
+                //     component: ReviewForm,
+                // },
+            ],
         },
         {
             path: '/profile',

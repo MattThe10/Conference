@@ -1,6 +1,6 @@
 <template>
-    <div class="modal">
-        <h2>{{ conference.name }}</h2>
+    <div>
+        <h3>Uprav príspevok</h3>
         <form id="article-form">
             <label for="title">Názov</label>
             <input type="text" v-model="title" id="title" required />
@@ -17,43 +17,35 @@
                 </li>
             </ul>
 
-            <!-- <label for="author">Autor</label>
-            <input type="text" id="author" v-model="author" required /> -->
-
-            <!-- <label for="date">Dátum</label>
-            <input type="date" id="date" v-model="date" required> -->
+            <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
+                @change="onFileChange($event, 'file_pdf');" accept=".pdf">
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
-                @change="onFileChange($event, 'file_pdf');" accept=".pdf" required>
-
-            <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
-                @change="onFileChange($event, 'file_word');" accept=".doc, .docx" required>
+                @change="onFileChange($event, 'file_word');" accept=".doc, .docx">
 
             <button type="button" @click="submitArticle" id="btn-submit">Odoslať</button>
             <button type="button" @click="saveArticle" id="btn-submit">Uložiť</button>
         </form>
     </div>
-
 </template>
 
 <script>
 import axios from "axios";
 
 export default {
+    props: {
+        article: Object,
+    },
     data() {
         return {
             user: [],
             users: [],
             user_ids: [],
-            title: '',
+            title: this.article.title,
             new_author_email: '',
             file_pdf: null,
             file_word: null,
         }
-    },
-    name: "ArticlesForm",
-    props: {
-        conference: Object,
     },
     methods: {
         async addAuthor() {
@@ -90,9 +82,13 @@ export default {
                 const user_response = await axios.get('/api/users');
                 this.users = user_response.data;
         },
-        //Tu je submit pre form -------PREROBIT PRE BACKEND--------
-        async submitArticle() {
-            await this.updateArticle('submit');
+        async setUsers() {
+            this.article.authors.forEach(user => {
+                this.user_ids.push(user.id)
+            });
+        },
+        submitArticle() {
+            this.updateArticle('submit');
 
             console.log(`Article for ${this.conference.name}:`, {
                 title: this.title,
@@ -100,8 +96,8 @@ export default {
             });
             this.$emit('close');
         },
-        async saveArticle() {
-            await this.updateArticle('save');
+        saveArticle() {
+            this.updateArticle('save');
 
             console.log(`Article for ${this.conference.name}:`, {
                 title: this.title,
@@ -137,10 +133,18 @@ export default {
                     form_data.append('user_ids[]', author_id)
                 });
 
-                form_data.append("file_pdf", this.file_pdf);
-                form_data.append("file_word", this.file_word);
+                if (this.file_pdf) {
+                    form_data.append("file_pdf", this.file_pdf);
+                }
 
-                form_data.append("conference_id", this.conference.id);
+                if (this.file_word) {
+                    form_data.append("file_word", this.file_word);
+                }
+
+                const article_response = await axios.get(`/api/articles/${ this.article.id }`);
+                const article_data = article_response.data;
+
+                form_data.append("conference_id", article_data.conference.id);
 
                 const article_statuses_response = await axios.get("/api/article_statuses");
                 const article_statuses = article_statuses_response.data;
@@ -156,20 +160,15 @@ export default {
                 
                 form_data.append("article_status_id", status.id);
 
-                const article_response = await axios.get(`/api/articles/${ this.articles[this.articles.length - 1].id }`);
-                const article = article_response.data;
-
-                form_data.append("conferences_id", article.conference.id);
-
                 // Request to update article
-                await axios.post(`/api/articles/${ article.id }`, form_data, {
+                await axios.post(`/api/articles/${this.articles[this.articles.length - 1].id}`, form_data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
 
                 // Reload page after successful update
-                // window.location.reload();
+                window.location.reload();
             } catch (error) {
                 console.log("Article update error: ", error);
 
@@ -187,54 +186,77 @@ export default {
     },
     mounted() {
         this.getUsers();
-    }
+        this.setUsers();
+    },
 };
 </script>
 
 <style scoped>
-#article-form {
+.btn {
+    padding: 10px;
+    font-size: 1.2rem;
+    background-color: #52b69a;
+    color: #fefae0;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+form {
     display: flex;
     flex-direction: column;
     text-align: left;
-    gap: 0.2rem;
-    font-size: 1.2rem;
+    gap: 5px;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+
+/* Pridané */
+.scrollable {
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    height: 70vh;
+    padding: 8px;
+    overflow-y: auto;
+    margin-bottom: 32px;
+}
+
+.input-group,
+.textarea-group {
     display: flex;
+    justify-content: space-between;
+    padding: 16px 8px;
+}
+
+.input-group:hover,
+.textarea-group:hover {
+    background-color: #ccc;
+}
+
+.input-group .question {
+    text-align: left;
+    flex: 2;
+}
+
+.input-group .radios {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    gap: 2vw;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    position: relative;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-#btn-submit {
-    padding: 5px;
+.textarea-group textarea {
+    width: 30vw;
     font-size: 1.5rem;
+}
+
+.default-button {
+    height: 5vh;
+    width: 10vh;
     background-color: #52b69a;
+    border: none;
+    border-radius: 12px;
     color: #fefae0;
-    border: 2px solid #52796f;
 }
 </style>

@@ -6,38 +6,42 @@ use App\Models\Review;
 use App\Models\ReviewFeature;
 use App\Models\ReviewsHasReviewFeature;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
 {
     public function index(Request $request) 
-	{
-		// Initialize the query with a relationship to 'university' 
-		$reviews = Review::query();
-		//	->with(['university']); 
-			
-		//Check if there a 'search' parameter in the request 
-		if ($request->has('search') && $request->search !=	 null) {
-		
-			// Convert the search term to lowercase for case-insensitive matching 
-			$search = strtolower($request->search); 
-			
-			// Apply filtering based on the search term 
-			$reviews = $reviews->where(function ($query) use ($search) {
-				$query->WhereHas('article', function ($query) use ($search) {
-						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related article name
-					})					
-					->orWhereHas('user', function ($query) use ($search) {
-						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related user name
-						$query->whereRaw('LOWER(surname) LIKE ?', ['%' . $search . '%']); // Filter by related user surname
-					});
-			});
-		}	
-					
-		$reviews = $reviews->get(); 
-				
-		// Return the resulting reviews as a JSON response 
-		return response()->json($reviews);
-	}
+    {
+        // Initialize the query with a relationship to 'university' 
+        $reviews = Review::query()
+            ->with(['article', 'user', 'review_features']); 
+            
+        //Check if there a 'search' parameter in the request 
+        if ($request->has('search') && $request->search !=   null) {
+        
+            // Convert the search term to lowercase for case-insensitive matching 
+            $search = strtolower($request->search); 
+            
+            // Apply filtering based on the search term 
+            $reviews = $reviews->where(function ($query) use ($search) {
+                $query->WhereHas('article', function ($query) use ($search) {
+                        $query->whereRaw('LOWER(title) LIKE ?', ['%' . $search . '%']); // Filter by related article name
+                    })                  
+                    ->orWhereHas('user', function ($query) use ($search) {
+                        $query->where(function ($query) use ($search) {
+                            $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by related user name
+                                ->orWhereRaw('LOWER(surname) LIKE ?', ['%' . $search . '%']); // Filter by related user surname
+                        });
+                    });
+            });
+        }   
+                    
+        $reviews = $reviews->get(); 
+                
+        // Return the resulting reviews as a JSON response 
+        return response()->json($reviews);
+    }
+
 
     public function show($review_id)
     {
@@ -70,7 +74,7 @@ class ReviewController extends Controller
     }
 
     public function update(Request $request, $review_id)
-    {
+    {Log::info($request);
         $validated = $request->validate([
             'comment'       => ['nullable', 'string', 'max:1000'],
             'pro'           => ['nullable', 'string', 'max:1000'],

@@ -21,33 +21,36 @@ class UserController extends Controller
     | returns them as a JSON response.
     |
     */
-	public function index(Request $request) 
-	{
-		// Initialize the query  
-		$users = User::query(); 
-			
-		//Check if there a 'search' parameter in the request 
-		if ($request->has('search') && $request->search != null) {
-		
-			// Convert the search term to lowercase for case-insensitive matching 
-			$search = strtolower($request->search); 
-			
-			// Apply filtering based on the search term 
-			$users = $users->where(function ($query) use ($search) {
-				$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by name
-					->orwhereRaw('LOWER(surname) LIKE?', ['%' . $search . '%']) // Filter by surname 
-					->orwhereRaw('LOWER(email) LIKE ?', ['%'. $search . '%']) // Filter by email 
-					->orWhereHas('faculty', function ($query) use ($search) {
-						$query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related faculty name
-					});
-			});
-		}	
-					
-		$users = $users->get(); 
-		
-		// Return the resulting users as a JSON response 
-		return response()->json($users);
-	}
+
+    public function index(Request $request) 
+    {
+        // Initialize the query  
+        $users = User::query()
+            ->with(['faculty', 'role', 'reviews', 'articles']);
+            
+        //Check if there a 'search' parameter in the request 
+        if ($request->has('search') && $request->search != null) {
+        
+            // Convert the search term to lowercase for case-insensitive matching 
+            $search = strtolower($request->search); 
+            
+            // Apply filtering based on the search term 
+            $users = $users->where(function ($query) use ($search) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by name
+                    ->orwhereRaw('LOWER(surname) LIKE?', ['%' . $search . '%']) // Filter by surname 
+                    ->orwhereRaw('LOWER(email) LIKE ?', ['%'. $search . '%']) // Filter by email 
+                    ->orWhereHas('faculty', function ($query) use ($search) {
+                        $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related faculty name
+                    });
+            });
+        }   
+                    
+        $users = $users->get(); 
+        
+        // Return the resulting users as a JSON response 
+        return response()->json($users);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Retrieve the current authenticated user
@@ -60,7 +63,8 @@ class UserController extends Controller
 
     public function getCurrentUser()
     {
-        $user = Auth::user();
+        $user = Auth::user()
+            ->load(['faculty', 'role', 'reviews', 'articles']);
 
         return response()->json($user);
     }

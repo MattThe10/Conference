@@ -1,55 +1,126 @@
 <template>
-    <NavBar></NavBar>
-    <h2 class="articles-header">Moje príspevky</h2>
-    <div id="articles-wrapper">
-        <div id="articles-display">
-            <ArticleItem v-for="article in articles" :key="article.id" :article="article" @openDetails="openDetails" />
-            <!-- Modal for Article Details -->
-            <div v-if="selectedArticle" class="modal-backdrop" @click="closeDetails">
-                <div class="modal-content" @click.stop>
-                    <button class="close-btn" @click="closeDetails">✖</button>
-                    <ArticleDetails :article="selectedArticle" @openReviewForm="openReviewForm" />
-                </div>
-            </div>
+    <div>
+        <NavBar></NavBar>
+        <div>
+            <h2 class="articles-header">Moje príspevky</h2>
+            <div id="articles-wrapper">
+                <div id="articles-display">
+                    <ArticleItem v-for="article in articles" :key="article.id" :article="article" :source="'articles'" @openDetails="openDetails" />
+                    <!-- Modal for Article Details -->
+                    <div v-if="selectedArticle" class="modal-backdrop" @click="closeDetails">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeDetails">✖</button>
+                            <ArticleDetails :article="selectedArticle" :source="selectedSource" @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm" @openReviewDetails="openReviewDetails" />
+                        </div>
+                    </div>
 
-            <!-- Modal for Review Form -->
-            <div v-if="showReviewForm" class="modal-backdrop" @click="closeReviewForm">
-                <div class="modal-content" @click.stop>
-                    <button class="close-btn" @click="closeReviewForm">✖</button>
-                    <ReviewForm :article="selectedArticle" @close="closeReviewForm" />
+                    <!-- Modal for Review Form -->
+                    <div v-if="showReviewForm" class="modal-backdrop" @click="closeReviewForm(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeReviewForm(selectedArticle)">✖</button>
+                            <ReviewForm :article="selectedArticle" @close="closeReviewForm(selectedArticle)" />
+                        </div>
+                    </div>
+
+                    <!-- Modal for Article Edit Form -->
+                    <div v-if="showArticleEditForm" class="modal-backdrop" @click="closeArticleEditForm(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeArticleEditForm(selectedArticle)">✖</button>
+                            <ArticleEditForm :article="selectedArticle" @close="closeArticleEditForm(selectedArticle)" />
+                        </div>
+                    </div>
+
+                    <!-- Modal for Review Details -->
+                    <div v-if="showReviewDetails" class="modal-backdrop" @click="closeReviewDetails(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeReviewDetails(selectedArticle)">✖</button>
+                            <ReviewDetails :review="selectedReview" @close="closeReviewDetails(selectedArticle)" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div>
+            <h2 class="articles-header">Pridelené príspevky</h2>
+            <div id="articles-wrapper">
+                <div id="articles-display">
+                    <ArticleItem v-for="article in articlesForRevew" :key="article.id" :article="article" :source="'articlesForReview'" @openDetails="openDetails" />
+                    <!-- Modal for Article Details -->
+                    <div v-if="selectedArticle" class="modal-backdrop" @click="closeDetails">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeDetails">✖</button>
+                            <ArticleDetails :article="selectedArticle" :source="selectedSource" @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm" @openReviewDetails="openReviewDetails" />
+                        </div>
+                    </div>
+
+                    <!-- Modal for Review Form -->
+                    <div v-if="showReviewForm" class="modal-backdrop" @click="closeReviewForm(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeReviewForm(selectedArticle)">✖</button>
+                            <ReviewForm :article="selectedArticle" @close="closeReviewForm(selectedArticle)" />
+                        </div>
+                    </div>
+
+                    <!-- Modal for Article Edit Form -->
+                    <div v-if="showArticleEditForm" class="modal-backdrop" @click="closeArticleEditForm(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeArticleEditForm(selectedArticle)">✖</button>
+                            <ArticleEditForm :article="selectedArticle" @close="closeArticleEditForm(selectedArticle)" />
+                        </div>
+                    </div>
+
+                    <!-- Modal for Review Details -->
+                    <div v-if="showReviewDetails" class="modal-backdrop" @click="closeReviewDetails(selectedArticle)">
+                        <div class="modal-content" @click.stop>
+                            <button class="close-btn" @click="closeReviewDetails(selectedArticle)">✖</button>
+                            <ReviewDetails :review="selectedReview" @close="closeReviewDetails(selectedArticle)" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div id="articles-button"> </div> -->
     </div>
-    <div id="articles-button"> </div>
 </template>
 <script>
 import axios from "axios";
 import NavBar from '@/components/NavBar.vue'
-import ArticlesForm from '@/components/ArticlesForm.vue'
+// import ArticlesForm from '@/components/ArticlesForm.vue'
 import ArticleItem from '@/components/ArticleItem.vue'
 import ArticleDetails from '@/components/ArticleDetails.vue'
 import ReviewForm from '@/components/ReviewForm.vue'
+import ArticleEditForm from '@/components/ArticleEditForm.vue'
+import ReviewDetails from '@/components/ReviewDetails.vue'
 
 
 export default {
     components: {
         NavBar,
-        ArticlesForm,
+        // ArticlesForm,
         ArticleItem,
         ArticleDetails,
-        ReviewForm
+        ReviewForm,
+        ArticleEditForm,
+        ReviewDetails
     },
     data() {
         return {
             user: [],
             articles: [
                 //Sem sa pridavaju articles
-                { id: 1, title: 'Vue 3 Basics', author: 'Jan Tenky', date: '2025-02-10', reviews: [] },
-                { id: 2, title: 'Advanced Vue Techniques', author: 'Petra Hladka', date: '2025-11-03', reviews: [] },
+                { id: 1, title: 'Vue 3 Basics', conference: 'Konferencia 1', status: 'Rozpracovaná', authors: [{name: 'Jan', surname: 'Tenky'}, {name: 'Petra', surname: 'Hladka'}], date: '2025-02-10', reviews: [] },
+                { id: 2, title: 'Advanced Vue Techniques', conference: 'Konferencia 2', status: 'Rozpracovaná', authors: [{name: 'Petra', surname: 'Hladka'}], date: '2025-11-03', reviews: [] },
+            ],
+            articlesForRevew: [
+                { id: 1, title: 'Vue 3 Basics', conference: 'Konferencia 1', status: 'Rozpracovaná', authors: [{name: 'Jan', surname: 'Tenky'}, {name: 'Petra', surname: 'Hladka'}], date: '2025-02-10', reviews: [] },
+                { id: 2, title: 'Advanced Vue Techniques', conference: 'Konferencia 2', status: 'Rozpracovaná', authors: [{name: 'Petra', surname: 'Hladka'}], date: '2025-11-03', reviews: [] },
             ],
             selectedArticle: null,
+            selectedSource: null,
             showReviewForm: false,
+            showArticleEditForm: false,
+            showReviewDetails: false,
         }
     },
     methods: {
@@ -60,11 +131,29 @@ export default {
             const articles_response = await axios.get("/api/articles");
             const articles = articles_response.data;
 
-            articles.forEach(article => {
-                article['users'].forEach(user => {
-                    if (user['id'] == this.user['id']) this.articles.push(article);
-                });
-            });
+            this.articles = articles
+                .filter(article => article['users'].some(user => user['id'] == this.user['id']))
+                .map(element => ({
+                    id: element['id'],
+                    title: element['title'],
+                    conference: 'Konferencia ' + element['conference']['start_year'] + ' / ' + element['conference']['end_year'],
+                    status: element['article_status']['name'],
+                    authors: element['users'],
+                    date: new Date(element['created_at']).toLocaleDateString('sk-SK', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    reviews: element['reviews'],
+                }));
+
+            this.articlesForRevew = articles
+                .filter(article => article['reviews'].some(review => review['users_id'] == this.user['id']))
+                .map(element => ({
+                    id: element['id'],
+                    title: element['title'],
+                    conference: 'Konferencia ' + element['conference']['start_year'] + ' / ' + element['conference']['end_year'],
+                    status: element['article_status']['name'],
+                    authors: element['users'],
+                    date: new Date(element['created_at']).toLocaleDateString('sk-SK', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    reviews: element['reviews'],
+                }));
         },
         openForm(conference) {
             this.selectedConference = conference;
@@ -72,17 +161,60 @@ export default {
         closeForm() {
             this.selectedConference = null;
         },
-        openDetails(article) {
+        openDetails(article, source) {
             this.selectedArticle = article;
+            this.selectedSource = source;
+
+            this.$router.push({
+                name: 'ArticleDetails',
+                params: { articleId: article.id },
+            });
         },
         closeDetails() {
             this.selectedArticle = null;
+            this.selectedSource = null;
+
+            this.$router.push('/articles');
         },
         openReviewForm() {
             this.showReviewForm = true;
         },
         closeReviewForm() {
             this.showReviewForm = false;
+        },
+        openArticleEditForm(article) {
+            this.showArticleEditForm = true;
+
+            this.$router.push({
+                name: 'ArticleEditForm',
+                params: { articleId: article.id },
+            });
+        },
+        closeArticleEditForm(article) {
+            this.showArticleEditForm = false;
+
+            this.$router.push({
+                name: 'ArticleDetails',
+                params: { articleId: article.id },
+            });
+        },
+        openReviewDetails(article, review) {
+            this.selectedReview = review;
+            this.showReviewDetails = true;
+
+            this.$router.push({
+                name: 'ReviewDetails',
+                params: { articleId: article.id, reviewId: review.id },
+            });
+        },
+        closeReviewDetails(article) {
+            this.selectedReview = null;
+            this.showReviewDetails = false;
+
+            this.$router.push({
+                name: 'ArticleDetails',
+                params: { articleId: article.id },
+            });
         },
     },
     mounted() {
@@ -131,7 +263,7 @@ export default {
     gap: 1rem;
 }
 
-#articles-button {}
+/* #articles-button {} */
 
 #btn-insert {
     padding: 5px;
@@ -175,5 +307,18 @@ export default {
     background: transparent;
     font-size: 1.5rem;
     cursor: pointer;
+}
+
+
+
+
+/* Pridané */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    position: relative;
 }
 </style>
