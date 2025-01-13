@@ -20,7 +20,8 @@ class UniversityController extends Controller
 	public function index(Request $request) 
 	{
 		// Initialize the query  
-		$universities = University::query(); 
+		$universities = University::query()
+            ->with(['faculties']); 
 			
 		//Check if there a 'search' parameter in the request 
 		if ($request->has('search') && $request->search !=	 null) {

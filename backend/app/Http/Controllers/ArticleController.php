@@ -54,7 +54,7 @@ class ArticleController extends Controller
     }
 
     public function store(Request $request)
-    {Log::info($request);
+    {
         $validated = $request->validate([
             'title'             => ['string', 'max:255'],
             'article_status_id' => ['integer', 'exists:article_statuses,id'],

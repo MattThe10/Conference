@@ -9,14 +9,17 @@ import ArticleDetails from '@/components/ArticleDetails.vue'
 import ArticleEditForm from '@/components/ArticleEditForm.vue'
 import ReviewDetails from '@/components/ReviewDetails.vue'
 // import ReviewForm from '@/components/ReviewForm.vue'
+import UserDataList from '@/components/admin/users/DataList.vue'
+import ArticleDataList from '@/components/admin/articles/DataList.vue'
+import ConferenceDataList from '@/components/admin/conferences/DataList.vue'
 
 import { checkAuth } from '@/auth';
 
 const routes = [
-         {
-             path: '/',
-             redirect: '/login'
-         },
+        {
+            path: '/',
+            redirect: '/login'
+        },
         {
             path: '/login',
             name: 'LoginForm',
@@ -64,9 +67,22 @@ const routes = [
             path: '/profile',
             name: 'ProfilePage',
             component: ProfilePage
+        },
+        {
+            path: '/admin/users',
+            name: 'UserDataList',
+            component: UserDataList
+        },
+        {
+            path: '/admin/articles',
+            name: 'ArticleDataList',
+            component: ArticleDataList
+        },
+        {
+            path: '/admin/conferences',
+            name: 'ConferenceDataList',
+            component: ConferenceDataList
         }
-
-        
     ]
 
     const router = createRouter({

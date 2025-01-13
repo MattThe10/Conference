@@ -74,7 +74,7 @@ class ReviewController extends Controller
     }
 
     public function update(Request $request, $review_id)
-    {Log::info($request);
+    {
         $validated = $request->validate([
             'comment'       => ['nullable', 'string', 'max:1000'],
             'pro'           => ['nullable', 'string', 'max:1000'],
