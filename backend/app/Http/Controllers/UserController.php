@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         // Initialize the query  
         $users = User::query()
-            ->with(['faculty', 'role', 'reviews', 'articles']);
+            ->with(['faculty.university', 'role', 'reviews', 'articles']);
             
         //Check if there a 'search' parameter in the request 
         if ($request->has('search') && $request->search != null) {
@@ -141,6 +141,31 @@ class UserController extends Controller
         $articles = $user->reviews()->with(['article.users'])->get();
 
         return response()->json($articles);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'password'          => ['required', Password::defaults()],
+            'email'             => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'name'              => ['required', 'string', 'max:255'],
+            'surname'           => ['required', 'string', 'max:255'],
+            'faculty_id'        => ['required', 'exists:faculties,id'],
+            'role_id'           => ['required', 'exists:roles,id'],
+        ]);
+
+        User::create([
+            'email'         => $validated['email'],
+            'name'          => $validated['name'],
+            'surname'       => $validated['surname'],
+            'faculties_id'  => $validated['faculty_id'],
+            'roles_id'      => $validated['role_id'],
+            'password'      => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'message' => 'Successfully created.'
+        ]);
     }
 
     public function update(Request $request, $user_id)

@@ -123,7 +123,7 @@ Route::controller(ArticleStatusController::class)->group(function () {
 Route::controller(ConferenceController::class)->group(function () {
     Route::get('/conferences', 'index');
     Route::get('/conference/{conference_id}', 'show');
-    Route::post('/conferences/store', 'store');
+    Route::post('/conferences', 'store');
     Route::put('/conferences/{conference_id}', 'update');
     Route::delete('/conferences/{conference_id}', 'destroy');
 });
@@ -157,6 +157,7 @@ Route::controller(ReviewFeatureController::class)->group(function () {
 */
 
 Route::controller(UserController::class)->group(function () {
+    Route::post('/users', 'store');
     Route::get('/users', 'index');
     Route::get('/users/{id}/articles', 'getUserArticles');
     Route::get('/users/{id}/articles_for_review', 'getArticlesForReview');

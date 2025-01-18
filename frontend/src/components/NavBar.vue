@@ -23,8 +23,13 @@ export default {
                     name: "Príspevky",
                     route: '/articles',
                 },
-                {
+                                {
                     id: 3,
+                    name: "Admin",
+                    route: '/admin/users',
+                },
+                {
+                    id: 4,
                     name: "Profil",
                     route: '/profile'
                 }
