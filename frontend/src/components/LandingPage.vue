@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div>
-                <button @click="logout()" id="btn-logout">Odhlásiť sa</button>
+                <button @click="logout()" id="btn-logout" class="btn">Odhlásiť sa</button>
             </div>
         </div>
     </div>
@@ -139,8 +139,9 @@ export default {
             }
         },
         async storeArticle(conference_id) {
-            try {console.log(conference_id);
-                 await axios.post('/api/articles',{
+            try {
+                console.log(conference_id);
+                await axios.post('/api/articles', {
                     user_id: this.user.id,
                     conference_id: conference_id,
                 });
@@ -215,10 +216,6 @@ export default {
 #btn-logout {
     padding: 10px;
     font-size: 1.2rem;
-    background-color: #52b69a;
-    color: #fefae0;
-    border: none;
-    border-radius: 10px;
     margin-bottom: 2rem;
     width: 10rem;
 }
@@ -255,6 +252,15 @@ export default {
     cursor: pointer;
 }
 
+.conference-display {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100vw;
+}
+
 .conference-item {
     margin: 15px 0;
     display: flex;
@@ -263,15 +269,4 @@ export default {
     align-items: center;
     gap: 10px;
 }
-
-.conference-display {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    width: 22rem;
-}
-
-.conference-header {}
 </style>

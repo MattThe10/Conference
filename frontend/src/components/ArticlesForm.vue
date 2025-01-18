@@ -5,10 +5,10 @@
             <label for="title">Názov</label>
             <input type="text" v-model="title" id="title" required />
 
-            <label for="email">Pridať autora</label>
+            <label for="email">Autor</label>
             <div>
                 <input type="email" v-model="new_author_email" placeholder="Zadajte e-mail" />
-                <button type="button" @click="addAuthor">Pridať</button>
+                <button type="button" class="btn" @click="addAuthor">Pridať</button>
             </div>
             <ul>
                 <li v-for="id in user_ids" :key="id">
@@ -16,21 +16,14 @@
                     <button type="button" @click="removeAuthor(id)">Odstrániť</button>
                 </li>
             </ul>
-
-            <!-- <label for="author">Autor</label>
-            <input type="text" id="author" v-model="author" required /> -->
-
-            <!-- <label for="date">Dátum</label>
-            <input type="date" id="date" v-model="date" required> -->
-
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
                 @change="onFileChange($event, 'file_pdf');" accept=".pdf" required>
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
                 @change="onFileChange($event, 'file_word');" accept=".doc, .docx" required>
 
-            <button type="button" @click="submitArticle" id="btn-submit">Odoslať</button>
-            <button type="button" @click="saveArticle" id="btn-submit">Uložiť</button>
+            <button type="button" class="btn" @click="submitArticle" id="btn-submit">Odoslať</button>
+            <button type="button" class="btn" @click="saveArticle" id="btn-submit">Uložiť</button>
         </form>
     </div>
 
@@ -60,7 +53,6 @@ export default {
             try {
                 const user_response = await axios.get(`/api/users?search=${this.new_author_email}`);
                 const users = user_response.data;
-                
                 if (users.length == 0) {
                     alert('Používateľ s týmto e-mailom neexistuje.');
                     return;
@@ -87,8 +79,8 @@ export default {
             return user ? user.name + ' ' + user.surname : 'Neznámy užívateľ';
         },
         async getUsers() {
-                const user_response = await axios.get('/api/users');
-                this.users = user_response.data;
+            const user_response = await axios.get('/api/users');
+            this.users = user_response.data;
         },
         //Tu je submit pre form -------PREROBIT PRE BACKEND--------
         async submitArticle() {
@@ -153,16 +145,16 @@ export default {
                 else if (type == "submit") {
                     status = article_statuses.find(article_status => article_status.key == 'submitted');
                 }
-                
+
                 form_data.append("article_status_id", status.id);
 
-                const article_response = await axios.get(`/api/articles/${ this.articles[this.articles.length - 1].id }`);
+                const article_response = await axios.get(`/api/articles/${this.articles[this.articles.length - 1].id}`);
                 const article = article_response.data;
 
                 form_data.append("conferences_id", article.conference.id);
 
                 // Request to update article
-                await axios.post(`/api/articles/${ article.id }`, form_data, {
+                await axios.post(`/api/articles/${article.id}`, form_data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -174,13 +166,13 @@ export default {
                 console.log("Article update error: ", error);
 
                 if (error.response) {
-                if (error.response.data.errors) {
-                    this.errorMessages = Object.values(
-                    error.response.data.errors
-                    ).flat();
-                } else {
-                    this.errorMessages = error.response.data.message || "Uknown error";
-                }
+                    if (error.response.data.errors) {
+                        this.errorMessages = Object.values(
+                            error.response.data.errors
+                        ).flat();
+                    } else {
+                        this.errorMessages = error.response.data.message || "Uknown error";
+                    }
                 }
             }
         },
@@ -233,8 +225,5 @@ export default {
 #btn-submit {
     padding: 5px;
     font-size: 1.5rem;
-    background-color: #52b69a;
-    color: #fefae0;
-    border: 2px solid #52796f;
 }
 </style>

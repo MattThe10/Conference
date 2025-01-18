@@ -15,8 +15,10 @@
                             <input type="email" id="email" v-model="email">
                             <label for="university-faculty-inp">Univerzita a Fakulta</label>
                             <select id="university-faculty-inp" v-model="faculty_id" required>
-                                <optgroup v-for="university in universities" :key="university.id" :label="university.name">
-                                    <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
+                                <optgroup v-for="university in universities" :key="university.id"
+                                    :label="university.name">
+                                    <option v-for="faculty in university.faculties" :key="faculty.id"
+                                        :value="faculty.id">
                                         {{ faculty.name }}
                                     </option>
                                 </optgroup>
@@ -34,11 +36,12 @@
                     </div>
                 </div>
                 <div class="confirm-card">
-                    <label for="current-password">Potvrď heslo</label>
+                    <label for="current-password">Potvrď zmeny heslom</label>
                     <input type="password" id="current-password" v-model="current_password">
                 </div>
             </form>
-            <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage }}
+            <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">{{ errorMessage
+                }}
             </p>
             <div class="btn-div">
                 <button type="submit" class="btn" id="btn-submit" form="profile-form">Uložiť</button>

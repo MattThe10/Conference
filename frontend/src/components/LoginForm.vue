@@ -17,7 +17,7 @@
           <label for="pass-inp">Heslo</label>
           <input type="password" id="pass-inp" class="inp" v-model="password" required />
         </div>
-        <button type="submit" class="green-btn">Prihlásiť sa</button>
+        <button type="submit" class="green-btn btn">Prihlásiť sa</button>
       </form>
       <p>
         Nemáte ešte účet?
@@ -145,15 +145,10 @@ h1 {
 
 .green-btn {
   width: 100%;
-  background-color: #52b69a;
-  color: white;
   font-size: 1.5rem;
-  border: none;
-  border-radius: 5px;
   margin-top: 15px;
   margin-bottom: 5px;
   padding: 3px;
-  cursor: pointer;
 }
 
 p {

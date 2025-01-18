@@ -3,12 +3,8 @@
         <h2>{{ conference.name }}</h2>
         <p>Dátum konferencie {{ conference.conference_date_sk }}</p>
         <p>Deadline {{ conference.submission_deadline_sk }}</p>
-        <!-- <p>{{ conference.place }}</p>
-        <p>{{ conference.street }}</p>
-        <p>{{ conference.city }}</p>
-        <p>{{ conference.postal_code }}</p> -->
-        <button @click="$emit('openForm', conference)" class="conference-create-btn" :class="{ disabled: isDisabled(conference)}">+</button>
-        <!-- <button @click="$emit('openForm', conference)" class="conference-create-btn">+</button> -->
+        <button @click="$emit('openForm', conference)" class="conference-create-btn btn"
+            :class="{ disabled: isDisabled(conference) }">+</button>
     </div>
 </template>
 
@@ -25,16 +21,17 @@ export default {
         conference: Object
     },
     methods: {
-        isDisabled(conference) {console.log(conference);
+        isDisabled(conference) {
+            console.log(conference);
             const deadline_date = new Date(conference['submission_deadline']);
             const current_date = new Date();
-            
+
             if (current_date > deadline_date) return true;
 
-            const article_exists = this.articles.some(element => 
+            const article_exists = this.articles.some(element =>
                 element['conferences_id'] == conference['id']
             );
-  
+
             if (article_exists) return true;
 
             return false;
@@ -58,14 +55,14 @@ export default {
 }
 </script>
 <style scoped>
+.conference-item {
+    width: 100%;
+}
+
 .conference-create-btn {
-    padding: 10px;
-    font-size: 1.2rem;
-    background-color: #52b69a;
-    color: #fefae0;
-    border: none;
-    border-radius: 10px;
+    font-size: 1.5rem;
     width: 2.5rem;
+    height: 2.5rem;
 }
 
 .conference-create-btn.disabled {

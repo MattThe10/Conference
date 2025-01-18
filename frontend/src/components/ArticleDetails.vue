@@ -7,17 +7,16 @@
         </p>
         <p>{{ article.date }}</p>
         <p>{{ article.status }}</p>
-        <!-- Priestor pre dorobenie file systemu -->
-        <!-- <p>{{ article.file }}</p> -->
 
-        <button @click="downloadFile()" class="btn-add document-download-btn" :class="{ disabled: download_disabled}">Stiahnuť</button>
+        <button @click="downloadFile()" class="btn-add document-download-btn btn"
+            :class="{ disabled: download_disabled }">Stiahnuť</button>
 
-        <button v-if="source == 'articlesForReview'" @click="$emit('openReviewForm')" class="btn-add">
-            <!-- Pridať komentár -->
+        <button v-if="source == 'articlesForReview'" @click="$emit('openReviewForm')" class="btn-add btn">
             Recenzovať
         </button>
 
-        <button v-if="source == 'articles'" @click="$emit('openArticleEditForm', article)"  class="btn-add article-edit-btn" :class="{ disabled: edit_disabled}">Upraviť</button>
+        <button v-if="source == 'articles'" @click="$emit('openArticleEditForm', article)"
+            class="btn-add article-edit-btn btn" :class="{ disabled: edit_disabled }">Upraviť</button>
 
         <hr />
 
@@ -28,7 +27,8 @@
             <div v-if="article.reviews.length > 0">
                 <div v-for="(review, index) in article.reviews" :key="index" class="review">
                     <!-- <p><strong>{{ review.reviewer }}</strong>: {{ review.content }}</p> -->
-                    <button @click="$emit('openReviewDetails', article, review)" class="btn-add">Recenzia {{ index + 1 }}</button>
+                    <button @click="$emit('openReviewDetails', article, review)" class="btn-add">Recenzia {{ index + 1
+                        }}</button>
                 </div>
             </div>
             <div v-else>
@@ -56,7 +56,7 @@ export default {
     },
     methods: {
         async getData() {
-            const article_response = await axios.get(`/api/articles/${ this.article.id }`);
+            const article_response = await axios.get(`/api/articles/${this.article.id}`);
             this.article_data = article_response.data;
 
             const deadline_date = new Date(this.article_data.conference['submission_deadline']);
@@ -64,8 +64,8 @@ export default {
 
             this.edit_disabled = current_date > deadline_date || !['draft', 'returned'].includes(this.article_data.article_status.key);
 
-            if (this.article_data.documents.length >= 2) this.download_disabled = false; 
-            else this.download_disabled = true; 
+            if (this.article_data.documents.length >= 2) this.download_disabled = false;
+            else this.download_disabled = true;
         },
         downloadFile() {
             console.log('Odosielaná požiadavka na URL:', `${process.env.VUE_APP_BACKEND_URL}/api/articles/download`);
@@ -103,10 +103,6 @@ export default {
 .btn-add {
     padding: 10px;
     font-size: 1.2rem;
-    background-color: #52b69a;
-    color: #fefae0;
-    border: none;
-    border-radius: 10px;
     margin-bottom: 0.5rem;
     width: 10rem;
 }

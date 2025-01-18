@@ -14,3 +14,10 @@ button {
     cursor: pointer;
 }
 
+.btn {
+    background-color: #52b69a;
+    color: #fefae0;
+    border: none;
+    border-radius: 10px;
+}
+
