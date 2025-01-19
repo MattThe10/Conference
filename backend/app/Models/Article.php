@@ -39,6 +39,8 @@ class Article extends Model
 
 	protected $fillable = [
 		'title',
+		'abstract',
+		'keywords',
 		'article_statuses_id',
 		'conferences_id'
 	];

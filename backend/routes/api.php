@@ -122,7 +122,7 @@ Route::controller(ArticleStatusController::class)->group(function () {
 
 Route::controller(ConferenceController::class)->group(function () {
     Route::get('/conferences', 'index');
-    Route::get('/conference/{conference_id}', 'show');
+    Route::get('/conferences/{conference_id}', 'show');
     Route::post('/conferences', 'store');
     Route::put('/conferences/{conference_id}', 'update');
     Route::delete('/conferences/{conference_id}', 'destroy');

@@ -20,6 +20,8 @@ class ArticlesExport implements FromArray
         $formatted_data[] = [
             'Article ID',
             'Article Title',
+            'Abstract',
+            'Keywords',
             'Status',
             'Author ID',
             'Author Name',
@@ -34,6 +36,8 @@ class ArticlesExport implements FromArray
                 $formatted_data[] = [
                     $article['id'],
                     $article['title'],
+                    $article['abstract'],
+                    $article['keywords'],
                     $article['status'],
                     $author['id'],
                     $author['name'] . ' ' . $author['surname'],

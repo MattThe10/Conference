@@ -14,7 +14,7 @@
                     Naozaj chcete odstrániť túto konferenciu?
                 </div>
                 <div class="data">
-                    Konferencia {{ conference.start_year }} / {{ conference.end_year }}
+                    {{ conference.title }}
                 </div>
             </div>
 

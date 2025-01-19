@@ -7,8 +7,9 @@
             <div class="list-header">
                 <div class="list-title">
                     <h2>
-                        Používatelia
+                        Recenzie
                     </h2>
+                    <button class="back-button" @click="back()">Späť</button>
                 </div>
                 <div class="list-search">
                     <input type="text" v-model="search">
@@ -23,72 +24,59 @@
                         ID
                     </th>
                     <th>
+                        Recenzent
+                    </th>
+                    <th>
                         Email
                     </th>
                     <th>
-                        Meno
-                    </th>
-                    <th>
-                        Priezvisko
-                    </th>
-                    <th>
-                        Rola
+                        Stav recenzie
                     </th>
                     <th>
                         Operácie
                     </th>
                 </tr>
                 <div class="data-list">
-                    <tr v-for="user in users" :key="user.id" @click="showDetailsModal(user)">
+                    <tr v-for="review in reviews" :key="review.id" @click="showDetailsModal(review)">
                         <td>
-                            {{ user.id }}
+                            {{ review.id }}
                         </td>
                         <td>
-                            {{ user.email }}
+                            {{ review.user.name }} {{ review.user.surname }} (ID: {{ review.user.id }})
                         </td>
                         <td>
-                            {{ user.name }}
+                            {{ review.user.email }}
                         </td>
                         <td>
-                            {{ user.surname }}
-                        </td>
-                        <td>
-                            {{ user.role.name }}
+                            {{ review.pro != null && review.con != null && review.comment != null ? 'Hotová' : 'Prázdna' }}
                         </td>
                         <td class="operations">
-                            <button @click.stop="showEditModal(user)">
+                            <button @click.stop="showEditModal(review)">
                                 Upraviť
                             </button>
-                            <!-- <button @click.stop="showDeleteModal(user)">
+                            <button @click.stop="showDeleteModal(review)">
                                 Odstrániť
-                            </button> -->
+                            </button>
                         </td>
                     </tr>
                 </div>
             </table>
 
-            <button type="button" class="add-button" @click="showCreateModal">
-                +
-            </button>
         </div>
-        
-        <CreateModal
-            v-show="isCreateModalVisible"
-            @close="closeCreateModal" />
 
         <EditModal
             v-show="isEditModalVisible"
-            :user="selectedData"
+            :review="selectedData"
             @close="closeEditModal" />
 
         <DeleteModal
             v-show="isDeleteModalVisible"
-            :user="selectedData"
+            :review="selectedData"
             @close="closeDeleteModal" />
 
         <DetailsModal
             v-show="isDetailsModalVisible"
-            :user="selectedData"
+            :review="selectedData"
             @close="closeDetailsModal" />
     </div>
 </template>
@@ -97,7 +85,6 @@
 import axios from "axios";
 import NavBar from '../../NavBar.vue'
 import AdminBar from '../AdminBar.vue'
-import CreateModal from './CreateModal.vue'
 import EditModal from './EditModal.vue'
 import DeleteModal from './DeleteModal.vue'
 import DetailsModal from './DetailsModal.vue'
@@ -106,14 +93,15 @@ export default {
     components: {
         NavBar,
         AdminBar,
-        CreateModal,
         EditModal,
         DeleteModal,
         DetailsModal,
     },
     data() {
         return {
-            users: [],
+            id: this.$route.params.id,
+
+            reviews: [],
             isCreateModalVisible: false,
             isEditModalVisible: false,
             isDeleteModalVisible: false,
@@ -124,12 +112,16 @@ export default {
     },
     methods: {
         async getData() {
-            const users_response = await axios.get("/api/users");
-            this.users = users_response.data;
+            const article_response = await axios.get(`api/articles/${ this.id }`);
+            const article = article_response.data;
+            this.reviews = article.reviews;
         },
         async searchData() {
-            const users_response = await axios.get(`/api/users?search=${ this.search }`);
-            this.users = users_response.data;
+            const reviews_response = await axios.get(`/api/reviews?search=${ this.search }`);
+            this.reviews = reviews_response.data;
+        },
+        back() {
+            this.$router.push({ name: 'ArticleDataList' });
         },
         showCreateModal() {
             this.isCreateModalVisible = true;
@@ -175,6 +167,25 @@ export default {
         align-items: center;
         margin-bottom: 16px;
         padding-left: 16px;
+    }
+
+    .list-header .list-title {
+        display: flex;
+    }
+
+    .list-header .list-title h2 {
+        display: flex;
+        align-items: center;
+    }
+
+    .list-header .list-title .back-button {
+        height: 40px;
+        width: 10vh;
+        background-color: #52b69a;
+        border: none;
+        border-radius: 12px;
+        color: #fefae0;
+        margin-left: 16px;
     }
 
     .list-header .list-search {

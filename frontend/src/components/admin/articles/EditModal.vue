@@ -2,50 +2,66 @@
     <div class="modal-backdrop" v-if="article">
         <div class="modal">
 
-            <div class="modal-header">
-                <div class="modal-title">
-                    Uprav príspevok
-                </div>
-                <button type="button" class="btn-close" @click="close" />
-            </div>
-
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="title">
-                        Názov
-                    </label>
-                    <input type="text" id="title" v-model="title">
+            <form @submit.prevent="submit">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Uprav príspevok
+                    </div>
+                    <button type="button" class="btn-close" @click="close" />
                 </div>
 
-                <div class="select-group">
-                    <label for="conference">
-                        Konferencia
-                    </label>
-                    <select id="conference" v-model="conferenceId">
-                        <option v-for="conference in conferences" :key="conference.id" :value="conference.id">
-                            Konferencia {{ conference.start_year }} / {{ conference.end_year }}
-                        </option>
-                    </select>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="title">
+                            Názov
+                        </label>
+                        <input type="text" id="title" v-model="title" required>
+                    </div>
+
+                    <div class="textarea-group">
+                        <label for="abstract">
+                            Abstrakt
+                        </label>
+                        <textarea type="text" id="abstract" v-model="abstract" required />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="keywords">
+                            Kľúčové slová
+                        </label>
+                        <input type="text" id="keywords" v-model="keywords" required>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="conference">
+                            Konferencia
+                        </label>
+                        <select id="conference" v-model="conferenceId" required>
+                            <option v-for="conference in conferences" :key="conference.id" :value="conference.id">
+                                {{ conference.title }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="status">
+                            Status
+                        </label>
+                        <select id="status" v-model="articleStatusId" required>
+                            <option v-for="article_status in article_statuses" :key="article_status.id" :value="article_status.id">
+                                {{ article_status.name }}
+                            </option>
+                        </select>
+                    </div>
+
                 </div>
 
-                <div class="select-group">
-                    <label for="status">
-                        Status
-                    </label>
-                    <select id="status" v-model="articleStatusId">
-                        <option v-for="article_status in article_statuses" :key="article_status.id" :value="article_status.id">
-                            {{ article_status.name }}
-                        </option>
-                    </select>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-submit">
+                        Potvrď
+                    </button>
                 </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-submit" @click="submit">
-                    Potvrď
-                </button>
-            </div>
+            </form>
 
         </div>
     </div>
@@ -58,6 +74,8 @@
         data() {
             return {
                 title: null,
+                abstract:null,
+                keywords:null,
                 conferenceId: null,
                 articleStatusId: null,
 
@@ -85,6 +103,8 @@
             submit() {
                 axios.post(`/api/articles/${this.article.id}`, {
                     title: this.title,
+                    abstract: this.abstract,
+                    keywords: this.keywords,
                     article_status_id: this.articleStatusId,
                     conference_id: this.conferenceId,
                 })
@@ -106,6 +126,8 @@
                 handler (newArticle) {
                     if (newArticle) {
                         this.title = this.article.title;
+                        this.abstract = this.article.abstract;
+                        this.keywords = this.article.keywords;
                         this.articleStatusId = this.article.article_statuses_id;
                         this.conferenceId = this.article.conferences_id;
                     }

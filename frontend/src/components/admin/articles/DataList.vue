@@ -3,7 +3,21 @@
         <NavBar></NavBar>
         <AdminBar></AdminBar>
 
-        <div>
+        <div class="list-content">
+            <div class="list-header">
+                <div class="list-title">
+                    <h2>
+                        Príspevky
+                    </h2>
+                    <button class="back-button" @click="back()" v-show="id != null">Späť</button>
+                </div>
+                <div class="list-search" v-show="id === null">
+                    <input type="text" v-model="search">
+                    <button type="button" @click="searchData()">
+                        Hľadaj
+                    </button>
+                </div>
+            </div>
             <table class="data-table">
                 <tr>
                     <th>
@@ -37,7 +51,7 @@
                             {{ article.title }}
                         </td>
                         <td>
-                            Konferencia {{ article.conference.start_year }} / {{ article.conference.end_year }}
+                            {{ article.conference.title }}
                         </td>
                         <td>
                             {{ article.article_status.name }}
@@ -57,8 +71,8 @@
             <!-- <button type="button" class="round-button add-button" @click="showCreateModal">
                 +
             </button> -->
-            <button type="button" class="round-button download-button" @click="downloadFiles" />
-            <button type="button" class="round-button review-button" @click="showAddForReviewModal" />
+            <button type="button" class="round-button download-button" :class="{ disabled: isDownloadButtonDisabled(selectedArticles) }" @click="downloadFiles" />
+            <button type="button" class="round-button review-button" :class="{ disabled: isAddForReviewButtonDisabled(selectedArticles) }" @click="showAddForReviewModal" v-if="id == null" />
         </div>
         
         <AddForReviewModal
@@ -103,6 +117,7 @@ export default {
     },
     data() {
         return {
+            id: this.$route.params.id ?? null,
             articles: [],
             selectedArticles: [],
             isAddForReviewModalVisible: false,
@@ -110,12 +125,45 @@ export default {
             isDeleteModalVisible: false,
             isDetailsModalVisible: false,
             selectedData: null,
+            search: null,
         }
     },
     methods: {
         async getData() {
-            const articles_response = await axios.get("/api/articles");
+            if (this.id) {
+                const conference_response = await axios.get(`/api/conferences/${ this.id }`);
+                const conference = conference_response.data;
+                this.articles = conference.articles;
+            } else {
+                const articles_response = await axios.get("/api/articles");
+                this.articles = articles_response.data;
+            }console.log(this.id);
+        },
+        async searchData() {
+            const articles_response = await axios.get(`/api/articles?search=${ this.search }`);
             this.articles = articles_response.data;
+        },
+        back() {
+            this.$router.push({ name: 'ConferenceDataList' });
+        },
+        isDownloadButtonDisabled(selected_articles) {
+            if (selected_articles.length == 0) return true;
+
+            let articles_with_documents = 0;
+
+            this.articles.forEach(element => {
+                if (selected_articles.includes(element.id)) {
+                    if (element.documents.length >= 2) articles_with_documents++;
+                }
+            });
+
+            if (articles_with_documents == 0) return true;
+            else false;
+        },
+        isAddForReviewButtonDisabled(selected_articles) {
+            if (selected_articles.length == 0) return true;
+
+            return false;
         },
         showAddForReviewModal() {
             this.isAddForReviewModalVisible = true;
@@ -170,13 +218,65 @@ export default {
 </script>
 
 <style scoped>
+    .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-left: 16px;
+    }
+
+    .list-header .list-title {
+        display: flex;
+    }
+
+    .list-header .list-title h2 {
+        display: flex;
+        align-items: center;
+    }
+
+    .list-header .list-title .back-button {
+        height: 40px;
+        width: 10vh;
+        background-color: #52b69a;
+        border: none;
+        border-radius: 12px;
+        color: #fefae0;
+        margin-left: 16px;
+    }
+
+    .list-header .list-search {
+        display: flex;
+        align-items: center;
+    }
+
+    .list-header .list-search input {
+        height: 40px;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    .list-header .list-search button {
+        height: 40px;
+        width: 10vh;
+        background-color: #52b69a;
+        border: none;
+        border-radius: 12px;
+        color: #fefae0;
+    }
+
+    .list-content {
+        padding: 0 5vw 0 16vw;
+    }
+
     .data-table {
         display: flex;
         flex-direction: column;
         position: relative;
-        left: 5rem;
+        /* left: 5rem; */
         margin: 0 auto;
-        width: 75vw;
+        /* width: 75vw; */
         height: 80vh;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         align-items: center;
@@ -194,10 +294,10 @@ export default {
     .data-table th,
     .data-table td {
         width: 12vw;
-        height: 6vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 8px 0;
     }
 
     .data-table .operations {
@@ -248,5 +348,10 @@ export default {
 
     .round-button.review-button::after {
         content: "+";
+    }
+
+    .round-button.disabled {
+        opacity: .5;
+        pointer-events: none;
     }
 </style>

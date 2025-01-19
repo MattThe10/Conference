@@ -22,6 +22,33 @@
 
                 <div class="data-group">
                     <div class="type">
+                        Abstrakt
+                    </div>
+                    <div class="value">
+                        {{ article.abstract }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Kľúčové slová
+                    </div>
+                    <div class="value">
+                        {{ article.keywords }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Konferencia
+                    </div>
+                    <div class="value">
+                        {{ article.conference.title }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
                         Autori
                     </div>
                     <div class="value">
@@ -35,10 +62,19 @@
 
                 <div class="data-group">
                     <div class="type">
+                        Stav
+                    </div>
+                    <div class="value">
+                        {{ article.article_status.name }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
                         Dokumenty
                     </div>
                     <div class="value download">
-                        <button type="button" @click="downloadFile()">
+                        <button type="button" :class="{ disabled: isDownloadButtonDisabled() }" @click="downloadFile()">
                             Stiahnuť
                         </button>
                     </div>
@@ -46,19 +82,12 @@
 
                 <div class="data-group">
                     <div class="type">
-                        Konferencia
+                        Recenzie
                     </div>
-                    <div class="value">
-                        Konferencia {{ article.conference.start_year }} / {{ article.conference.end_year }}
-                    </div>
-                </div>
-
-                <div class="data-group">
-                    <div class="type">
-                        Stav
-                    </div>
-                    <div class="value">
-                        {{ article.article_status.name }}
+                    <div class="value reviews">
+                        <button type="button" :class="{ disabled: isReviewsButtonDisabled() }" @click="showReviewList()">
+                            Zobraziť
+                        </button>
                     </div>
                 </div>
 
@@ -97,7 +126,24 @@
                     link.click();
                 });
             },
-        }
+            showReviewList() {
+                this.$router.push({ name: 'ReviewDataList', params: { id: this.article.id } });
+            },
+            isDownloadButtonDisabled() {
+                if (this.article.documents.length >= 2) {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            isReviewsButtonDisabled() {
+                if (this.article.reviews.length > 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+        },
     };
 </script>
 
@@ -209,11 +255,13 @@
         margin-bottom: 8px;
     }
 
-    .value.download {
+    .value.download,
+    .value.reviews {
         height: 64px !important;
     }
 
-    .value.download button {
+    .value.download button,
+    .value.reviews button {
         width: 100%;
         height: 100%;
         background-color: #52b69a;
@@ -221,5 +269,11 @@
         border-radius: 12px;
         color: #fefae0;
         font-size: 1.2rem;
+    }
+
+    .value.download button.disabled,
+    .value.reviews button.disabled {
+        opacity: .5;
+        pointer-events: none;
     }
 </style>

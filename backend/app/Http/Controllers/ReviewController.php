@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\ArticleStatus;
 use App\Models\Review;
 use App\Models\ReviewFeature;
 use App\Models\ReviewsHasReviewFeature;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ReviewController extends Controller
@@ -59,6 +62,19 @@ class ReviewController extends Controller
             'user_id'       => ['required', 'integer', 'exists:users,id'],
             'article_id'    => ['required', 'integer', 'exists:articles,id'],
         ]);
+
+        if ($request->input('article_for_review')) {
+            $article = Article::findOrFail($validated['article_id']);
+
+            $accepted_status_id = ArticleStatus::where('key', 'accepted')->first()->id;
+            $accepted_with_conditions_status_id = ArticleStatus::where('key', 'accepted_with_conditions')->first()->id;
+
+            if (!in_array($article->article_status->id, [$accepted_status_id, $accepted_with_conditions_status_id])) {
+                return response()->json([
+                    'message'   => 'The article cannot be assigned to a reviewer.',
+                ], 403);
+            }
+        }
 
         Review::create([
             'comment'       => $validated['comment'] ?? null,
@@ -124,11 +140,26 @@ class ReviewController extends Controller
 
     public function destroy($review_id)
     {
-        $review = Review::findOrFail($review_id);
-        $review->delete();
+        DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'Review deleted successfully.',
-        ], 200);
+        try {
+            ReviewsHasReviewFeature::where('reviews_id', $review_id)->delete();
+    
+            $review = Review::findOrFail($review_id);
+            $review->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Review deleted successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message'   => 'Failed to delete the review.',
+                'error'     => $e->getMessage(),
+            ], 500);
+        }
     }
 }

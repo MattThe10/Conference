@@ -3,7 +3,20 @@
         <NavBar></NavBar>
         <AdminBar></AdminBar>
 
-        <div>
+        <div class="list-content">
+            <div class="list-header">
+                <div class="list-title">
+                    <h2>
+                        Otázky recenzie
+                    </h2>
+                </div>
+                <div class="list-search">
+                    <input type="text" v-model="search">
+                    <button type="button" @click="searchData()">
+                        Hľadaj
+                    </button>
+                </div>
+            </div>
             <table class="data-table">
                 <tr>
                     <th>
@@ -94,11 +107,16 @@ export default {
             isDeleteModalVisible: false,
             isDetailsModalVisible: false,
             selectedData: null,
+            search: null,
         }
     },
     methods: {
         async getData() {
             const review_features_response = await axios.get("/api/review_features");
+            this.review_features = review_features_response.data;
+        },
+        async searchData() {
+            const review_features_response = await axios.get(`/api/review_features?search=${ this.search }`);
             this.review_features = review_features_response.data;
         },
         showCreateModal() {
@@ -139,13 +157,46 @@ export default {
 </script>
 
 <style scoped>
+    .list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-left: 16px;
+    }
+
+    .list-header .list-search {
+        display: flex;
+        align-items: center;
+    }
+
+    .list-header .list-search input {
+        height: 40px;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    .list-header .list-search button {
+        height: 40px;
+        width: 10vh;
+        background-color: #52b69a;
+        border: none;
+        border-radius: 12px;
+        color: #fefae0;
+    }
+
+    .list-content {
+        padding: 0 5vw 0 16vw;
+    }
+
     .data-table {
         display: flex;
         flex-direction: column;
         position: relative;
-        left: 5rem;
+        /* left: 5rem; */
         margin: 0 auto;
-        width: 75vw;
+        /* width: 75vw; */
         height: 80vh;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         align-items: center;
