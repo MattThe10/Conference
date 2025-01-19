@@ -20,7 +20,8 @@ class ReviewFeatureController extends Controller
     public function index(Request $request) 
     {
         // Initialize the query  
-        $review_features = ReviewFeature::query(); 
+        $review_features = ReviewFeature::query()
+            ->with(['reviews']);
             
         //Check if there a 'search' parameter in the request 
         if ($request->has('search') && $request->search != null) {
@@ -72,13 +73,15 @@ class ReviewFeatureController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'content'   => ['required', 'string', 'max:255'],
-            'is_active' => ['required', 'int'],
+            'content'       => ['required', 'string', 'max:255'],
+            'rating_type'   => ['required', 'int'],
+            'is_active'     => ['required', 'int'],
         ]);
 
         ReviewFeature::create([
-            'content'   => $validated['content'],
-            'is_active' => $validated['is_active'],
+            'content'       => $validated['content'],
+            'rating_type'   => $validated['rating_type'],
+            'is_active'     => $validated['is_active'],
         ]);
 
         return response()->json([
@@ -100,15 +103,17 @@ class ReviewFeatureController extends Controller
     public function update(Request $request, $review_feature_id)
     {
         $validated = $request->validate([
-            'content'   => ['required', 'string', 'max:255'],
-            'is_active'  => ['required', 'int'],
+            'content'       => ['required', 'string', 'max:255'],
+            'rating_type'   => ['required', 'int'],
+            'is_active'     => ['required', 'int'],
         ]);
 
         $review_feature = ReviewFeature::findOrFail($review_feature_id);
 
         $review_feature->update([
-            'content'   => $validated['content'],
-            'is_active' => $validated['is_active'],
+            'content'       => $validated['content'],
+            'rating_type'   => $validated['rating_type'],
+            'is_active'     => $validated['is_active'],
         ]);
 
         return response()->json([

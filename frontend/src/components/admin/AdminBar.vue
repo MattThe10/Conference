@@ -29,6 +29,21 @@ export default {
                     name: "Konferencie",
                     route: '/admin/conferences'
                 },
+                {
+                    id: 4,
+                    name: "Otázky recenzie",
+                    route: '/admin/review_features'
+                },
+                {
+                    id: 5,
+                    name: "Univerzity",
+                    route: '/admin/universities'
+                },
+                {
+                    id: 6,
+                    name: "Fakulty",
+                    route: '/admin/faculties'
+                },
             ],
         };
     },

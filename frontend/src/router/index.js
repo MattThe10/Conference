@@ -12,6 +12,9 @@ import ReviewDetails from '@/components/ReviewDetails.vue'
 import UserDataList from '@/components/admin/users/DataList.vue'
 import ArticleDataList from '@/components/admin/articles/DataList.vue'
 import ConferenceDataList from '@/components/admin/conferences/DataList.vue'
+import ReviewFeatureDataList from '@/components/admin/review_features/DataList.vue'
+import UniversityDataList from '@/components/admin/universities/DataList.vue'
+import FacultyDataList from '@/components/admin/faculties/DataList.vue'
 
 import { checkAuth } from '@/auth';
 
@@ -82,6 +85,21 @@ const routes = [
             path: '/admin/conferences',
             name: 'ConferenceDataList',
             component: ConferenceDataList
+        },
+        {
+            path: '/admin/review_features',
+            name: 'ReviewFeatureDataList',
+            component: ReviewFeatureDataList
+        },
+        {
+            path: '/admin/universities',
+            name: 'UniversityDataList',
+            component: UniversityDataList
+        },
+        {
+            path: '/admin/faculties',
+            name: 'FacultyDataList',
+            component: FacultyDataList
         }
     ]
 
