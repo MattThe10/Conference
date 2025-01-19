@@ -7,7 +7,7 @@
             <div class="list-header">
                 <div class="list-title">
                     <h2>
-                        Používatelia
+                        Univerzity
                     </h2>
                 </div>
                 <div class="list-search">
@@ -23,45 +23,27 @@
                         ID
                     </th>
                     <th>
-                        Email
-                    </th>
-                    <th>
-                        Meno
-                    </th>
-                    <th>
-                        Priezvisko
-                    </th>
-                    <th>
-                        Rola
+                        Názov
                     </th>
                     <th>
                         Operácie
                     </th>
                 </tr>
                 <div class="data-list">
-                    <tr v-for="user in users" :key="user.id" @click="showDetailsModal(user)">
+                    <tr v-for="university in universities" :key="university.id" @click="showDetailsModal(university)">
                         <td>
-                            {{ user.id }}
+                            {{ university.id }}
                         </td>
                         <td>
-                            {{ user.email }}
-                        </td>
-                        <td>
-                            {{ user.name }}
-                        </td>
-                        <td>
-                            {{ user.surname }}
-                        </td>
-                        <td>
-                            {{ user.role.name }}
+                            {{ university.name }}
                         </td>
                         <td class="operations">
-                            <button @click.stop="showEditModal(user)">
+                            <button @click.stop="showEditModal(university)">
                                 Upraviť
                             </button>
-                            <!-- <button @click.stop="showDeleteModal(user)">
+                            <button @click.stop="showDeleteModal(university)">
                                 Odstrániť
-                            </button> -->
+                            </button>
                         </td>
                     </tr>
                 </div>
@@ -78,17 +60,17 @@
 
         <EditModal
             v-show="isEditModalVisible"
-            :user="selectedData"
+            :university="selectedData"
             @close="closeEditModal" />
 
         <DeleteModal
             v-show="isDeleteModalVisible"
-            :user="selectedData"
+            :university="selectedData"
             @close="closeDeleteModal" />
 
         <DetailsModal
             v-show="isDetailsModalVisible"
-            :user="selectedData"
+            :university="selectedData"
             @close="closeDetailsModal" />
     </div>
 </template>
@@ -113,7 +95,7 @@ export default {
     },
     data() {
         return {
-            users: [],
+            universities: [],
             isCreateModalVisible: false,
             isEditModalVisible: false,
             isDeleteModalVisible: false,
@@ -124,12 +106,12 @@ export default {
     },
     methods: {
         async getData() {
-            const users_response = await axios.get("/api/users");
-            this.users = users_response.data;
+            const universities_response = await axios.get("/api/universities");
+            this.universities = universities_response.data;
         },
         async searchData() {
-            const users_response = await axios.get(`/api/users?search=${ this.search }`);
-            this.users = users_response.data;
+            const universities_response = await axios.get(`/api/universities?search=${ this.search }`);
+            this.universities = universities_response.data;
         },
         showCreateModal() {
             this.isCreateModalVisible = true;

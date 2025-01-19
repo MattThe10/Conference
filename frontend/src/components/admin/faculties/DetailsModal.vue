@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop" v-if="faculty">
         <div class="modal">
 
             <div class="modal-header">
@@ -13,81 +13,55 @@
 
                 <div class="data-group">
                     <div class="type">
-                        Názov
+                        Fakulta
                     </div>
                     <div class="value">
-                        {{ article.title }}
+                        {{ faculty.name }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Abstrakt
+                        Univerzita
                     </div>
                     <div class="value">
-                        {{ article.abstract }}
+                        {{ faculty.university.name }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Kľúčové slová
+                        Adresa
                     </div>
                     <div class="value">
-                        {{ article.keywords }}
+                        {{ faculty.address }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Konferencia
+                        Mesto
                     </div>
                     <div class="value">
-                        {{ article.conference.title }}
+                        {{ faculty.city }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Autori
+                        PSČ
                     </div>
                     <div class="value">
-                        <ul>
-                            <li v-for="user in article.users" :key="user.id">
-                                {{ user.name }} {{ user.surname }} (ID: {{ user.id }})
-                            </li>
-                        </ul>
+                        {{ faculty.postal_code }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Stav
+                        Krajina
                     </div>
                     <div class="value">
-                        {{ article.article_status.name }}
-                    </div>
-                </div>
-
-                <div class="data-group">
-                    <div class="type">
-                        Dokumenty
-                    </div>
-                    <div class="value download">
-                        <button type="button" :class="{ disabled: isDownloadButtonDisabled() }" @click="downloadFile()">
-                            Stiahnuť
-                        </button>
-                    </div>
-                </div>
-
-                <div class="data-group">
-                    <div class="type">
-                        Recenzie
-                    </div>
-                    <div class="value reviews">
-                        <button type="button" :class="{ disabled: isReviewsButtonDisabled() }" @click="showReviewList()">
-                            Zobraziť
-                        </button>
+                        {{ faculty.country }}
                     </div>
                 </div>
 
@@ -98,11 +72,9 @@
 </template>
 
 <script>
-    import axios from "axios";
-
     export default {
         props: {
-            article: {
+            faculty: {
                 type: Object,
                 required: true,
             },
@@ -111,39 +83,7 @@
             close() {
                 this.$emit('close');
             },
-            downloadFile() {
-                axios({
-                    url: `${process.env.VUE_APP_BACKEND_URL}/api/articles/download`,
-                    method: 'POST',
-                    responseType: 'blob',
-                    data: { article_ids: [this.article.id] }
-                }).then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'article.zip');
-                    document.body.appendChild(link);
-                    link.click();
-                });
-            },
-            showReviewList() {
-                this.$router.push({ name: 'ReviewDataList', params: { id: this.article.id } });
-            },
-            isDownloadButtonDisabled() {
-                if (this.article.documents.length >= 2) {
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-            isReviewsButtonDisabled() {
-                if (this.article.reviews.length > 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-        },
+        }
     };
 </script>
 
@@ -242,38 +182,8 @@
     }
 
     .data-group .value {
-        height: 100% !important;
+        height: 40px;
         font-size: 1.2rem;
         padding: 8px;
-    }
-
-    .data-group .value ul {
-        list-style: none;
-    }
-
-    .data-group .value ul li:not(:last-child) {
-        margin-bottom: 8px;
-    }
-
-    .value.download,
-    .value.reviews {
-        height: 64px !important;
-    }
-
-    .value.download button,
-    .value.reviews button {
-        width: 100%;
-        height: 100%;
-        background-color: #52b69a;
-        border: none;
-        border-radius: 12px;
-        color: #fefae0;
-        font-size: 1.2rem;
-    }
-
-    .value.download button.disabled,
-    .value.reviews button.disabled {
-        opacity: .5;
-        pointer-events: none;
     }
 </style>

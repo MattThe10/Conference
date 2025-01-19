@@ -26,7 +26,7 @@ class ArticleController extends Controller
         //$articles = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
 
 		$articles = Article::query()
-		    ->with(['conference', 'reviews', 'users', 'article_status']); 
+		    ->with(['conference', 'reviews', 'users', 'article_status', 'documents']);
 			
 		//Check if there a 'search' parameter in the request 
 		if ($request->has('search') && $request->search != null) {
@@ -48,7 +48,7 @@ class ArticleController extends Controller
 
     public function show($article_id)
     {
-        $article = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->findOrFail($article_id);
+        $article = Article::with(['article_status', 'conference', 'documents', 'reviews.user', 'users'])->findOrFail($article_id);
 
         return response()->json($article);
     }
@@ -57,6 +57,8 @@ class ArticleController extends Controller
     {
         $validated = $request->validate([
             'title'             => ['string', 'max:255'],
+            'abstract'          => ['string', 'max:1000'],
+            'keywords'          => ['string', 'max:255'],
             'article_status_id' => ['integer', 'exists:article_statuses,id'],
             'conference_id'     => ['integer', 'exists:conferences,id'],
         ]);
@@ -65,6 +67,8 @@ class ArticleController extends Controller
 
         $article = Article::create([
             'title'                 => $validated['title'] ?? 'New Article',
+            'abstract'              => $validated['abstract'] ?? '',
+            'keywords'              => $validated['keywords'] ?? '',
             'article_statuses_id'   => $validated['article_status_id'] ?? ArticleStatus::where('key', 'draft')->first()->id,
             'conferences_id'        => $validated['conference_id'] ?? Conference::orderBy('id', 'desc')->first()->id,
         ]);
@@ -77,9 +81,11 @@ class ArticleController extends Controller
     }
 
     public function update(Request $request, $article_id)
-    {Log::info($request);
+    {
         $validated = $request->validate([
             'title'             => ['required', 'string', 'max:255'],
+            'abstract'          => ['required', 'string', 'max:1000'],
+            'keywords'          => ['required', 'string', 'max:255'],
             'file_pdf'          => ['file', 'mimes:pdf'],
             'file_word'         => ['file', 'mimes:doc,docx'],
             'user_ids'          => ['array'],
@@ -93,6 +99,8 @@ class ArticleController extends Controller
             $article = Article::findOrFail($article_id);
             $article->update([
                 'title'                 => $validated['title'],
+                'abstract'              => $validated['abstract'],
+                'keywords'              => $validated['keywords'],
                 'article_statuses_id'   => $validated['article_status_id'] ?? ArticleStatus::where('key', 'submitted')->first()->id,
                 'conferences_id'        => $validated['conference_id'],
             ]);
@@ -191,31 +199,36 @@ class ArticleController extends Controller
 
         foreach ($validated['article_ids'] as $article_id) {
             $article = Article::findOrFail($article_id);
-            $documents = $article->documents;
-            $all_documents = $all_documents->merge($documents);
 
-            $article_data = [
-                'id'        => $article->id,
-                'title'     => $article->title,
-                'status'    => $article->article_status->name,
-                'authors'   => [],
-            ];
-
-            foreach ($article->users as $user) {
-                $user_data = [
-                    'id'            => $user->id,
-                    'name'          => $user->name,
-                    'surname'       => $user->surname,
-                    'email'         => $user->email,
-                    'role'          => $user->role->name,
-                    'university'    => $user->faculty->university->name,
-                    'faculty'       => $user->faculty->name,
+            if ($article->documents->count() >= 2) {
+                $documents = $article->documents;
+                $all_documents = $all_documents->merge($documents);
+    
+                $article_data = [
+                    'id'        => $article->id,
+                    'title'     => $article->title,
+                    'abstract'  => $article->abstract,
+                    'keywords'  => $article->keywords,
+                    'status'    => $article->article_status->name,
+                    'authors'   => [],
                 ];
-
-                $article_data['authors'][] = $user_data;
+    
+                foreach ($article->users as $user) {
+                    $user_data = [
+                        'id'            => $user->id,
+                        'name'          => $user->name,
+                        'surname'       => $user->surname,
+                        'email'         => $user->email,
+                        'role'          => $user->role->name,
+                        'university'    => $user->faculty->university->name,
+                        'faculty'       => $user->faculty->name,
+                    ];
+    
+                    $article_data['authors'][] = $user_data;
+                }
+    
+                $data[] = $article_data;
             }
-
-            $data[] = $article_data;
         } 
 
         if ($all_documents->isNotEmpty()) {

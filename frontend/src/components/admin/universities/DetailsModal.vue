@@ -1,27 +1,61 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop" v-if="university">
         <div class="modal">
 
             <div class="modal-header">
                 <div class="modal-title">
-                    Kontrola
+                    Detaily
                 </div>
                 <button type="button" class="btn-close" @click="close" />
             </div>
 
             <div class="modal-body">
-                <div class="question">
-                    Naozaj chcete odstrániť tento príspevok?
-                </div>
-                <div class="data">
-                    {{ article.title }}
-                </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-submit" @click="submit">
-                    Áno
-                </button>
+                <div class="data-group">
+                    <div class="type">
+                        Názov
+                    </div>
+                    <div class="value">
+                        {{ university.name }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Adresa
+                    </div>
+                    <div class="value">
+                        {{ university.address }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Mesto
+                    </div>
+                    <div class="value">
+                        {{ university.city }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        PSČ
+                    </div>
+                    <div class="value">
+                        {{ university.postal_code }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Krajina
+                    </div>
+                    <div class="value">
+                        {{ university.country }}
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -29,11 +63,9 @@
 </template>
 
 <script>
-    import axios from "axios";
-
     export default {
         props: {
-            article: {
+            university: {
                 type: Object,
                 required: true,
             },
@@ -42,22 +74,7 @@
             close() {
                 this.$emit('close');
             },
-            submit() {
-                axios.delete(`/api/articles/${this.article.id}`)
-                .then(() => {
-                    location.reload();
-                })
-                .catch((error) => {
-                    console.error("Chyba pri odstraňovaní príspevku: ", error);
-
-                    if (this.article.reviews.length > 0) {
-                        alert("Tento príspevok je už recenzovaný.");
-                    } else {
-                        alert("Nepodarilo sa odstrániť príspevok.");
-                    }
-                });
-            },
-        },
+        }
     };
 </script>
 
@@ -129,16 +146,7 @@
     }
 
     .modal-body {
-        padding: 32px 0;
-    }
-
-    .modal-body .question {
-        font-size: 1.2rem;
-        margin-bottom: 16px;
-    }
-
-    .modal-body .data {
-        font-size: 1.5rem;
+        padding: 16px 0;
     }
 
     .modal-footer .btn-submit {
@@ -151,8 +159,7 @@
         font-size: 1.2rem;
     }
 
-    .input-group,
-    .select-group {
+    .data-group {
         display: flex;
         flex-direction: column;
         text-align: left;
@@ -160,15 +167,13 @@
         margin-bottom: 16px;
     }
 
-    .input-group label,
-    .select-group label {
+    .data-group .type {
         font-size: 1.2rem;
+        font-weight: 700;
     }
 
-    .input-group input,
-    .select-group select {
+    .data-group .value {
         height: 40px;
-        border-radius: 12px;
         font-size: 1.2rem;
         padding: 8px;
     }

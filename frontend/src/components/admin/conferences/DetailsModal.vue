@@ -13,19 +13,28 @@
 
                 <div class="data-group">
                     <div class="type">
-                        Začiatočný rok
+                        Názov
                     </div>
                     <div class="value">
-                        {{ conference.start_year }}
+                        {{ conference.title }}
                     </div>
                 </div>
 
                 <div class="data-group">
                     <div class="type">
-                        Konečný rok
+                        Abstrakt
                     </div>
                     <div class="value">
-                        {{ conference.end_year }}
+                        {{ conference.abstract }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Miesto konania
+                    </div>
+                    <div class="value">
+                        {{ conference.university.name }}
                     </div>
                 </div>
 
@@ -46,7 +55,7 @@
 
                 <div class="data-group">
                     <div class="type">
-                        Deadline odovzdania prác
+                        Deadline na odovzdania prác
                     </div>
                     <div class="value">
                         {{
@@ -61,10 +70,71 @@
 
                 <div class="data-group">
                     <div class="type">
-                        Miesto konania
+                        Deadline na priradenie publikácie 
                     </div>
                     <div class="value">
-                        {{ conference.university.name }}
+                        {{
+                            new Date(conference.review_assignment_deadline).toLocaleDateString('sk-SK', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                            })
+                        }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Deadline na recenzovanie
+                    </div>
+                    <div class="value">
+                        {{
+                            new Date(conference.review_submission_deadline).toLocaleDateString('sk-SK', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                            })
+                        }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Dátum zverejnenia recenzií
+                    </div>
+                    <div class="value">
+                        {{
+                            new Date(conference.review_publication_date).toLocaleDateString('sk-SK', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                            })
+                        }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Je aktívna?
+                    </div>
+                    <div class="value">
+                        {{ conference.is_active == 1 ? 'Áno' : 'Nie' }}
+                    </div>
+                </div>
+
+                <div class="data-group">
+                    <div class="type">
+                        Príspevky
+                    </div>
+                    <div class="value reviews">
+                        <button type="button" :class="{ disabled: isArticlesButtonDisabled() }" @click="showArticleList()">
+                            Zobraziť
+                        </button>
+                    </div>
+                    <div class="value reviews">
+                        <button type="button" :class="{ disabled: isDownloadButtonDisabled() }" @click="downloadFile()">
+                            Stiahnuť
+                        </button>
                     </div>
                 </div>
 
@@ -75,6 +145,8 @@
 </template>
 
 <script>
+    import axios from "axios";
+
     export default {
         props: {
             conference: {
@@ -85,6 +157,48 @@
         methods: {
             close() {
                 this.$emit('close');
+            },
+            isArticlesButtonDisabled() {
+                if (this.conference.articles.length > 0) {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            showArticleList() {
+                this.$router.push({ name: 'ConferenceArticlesDataList', params: { id: this.conference.id } });
+            },
+            isDownloadButtonDisabled() {
+                if (this.conference.articles) {
+                    const has_documents = this.conference.articles.some(article => 
+                        article.documents && article.documents.length >= 2
+                    );
+                    
+                    return !has_documents;
+                } else {
+                    return true;
+                }
+            },
+            downloadFile() {
+                let article_ids = [];
+                
+                this.conference.articles.forEach(element => {
+                    article_ids.push(element.id);
+                });
+
+                axios({
+                    url: `${process.env.VUE_APP_BACKEND_URL}/api/articles/download`,
+                    method: 'POST',
+                    responseType: 'blob',
+                    data: { article_ids: article_ids }
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'article.zip');
+                    document.body.appendChild(link);
+                    link.click();
+                });
             },
         }
     };
@@ -159,6 +273,8 @@
 
     .modal-body {
         padding: 16px 0;
+        max-height: 80vh;
+        overflow-y: auto;
     }
 
     .modal-footer .btn-submit {

@@ -1,59 +1,50 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop" v-if="review_feature">
         <div class="modal">
 
             <form @submit.prevent="submit">
                 <div class="modal-header">
                     <div class="modal-title">
-                        Uprav príspevok
+                        Uprav Otázku recenzie
                     </div>
                     <button type="button" class="btn-close" @click="close" />
                 </div>
 
                 <div class="modal-body">
-                    <div class="input-group">
-                        <label for="title">
-                            Názov
-                        </label>
-                        <input type="text" id="title" v-model="title" required>
-                    </div>
-
                     <div class="textarea-group">
-                        <label for="abstract">
-                            Abstrakt
+                        <label for="content">
+                            Obsah
                         </label>
-                        <textarea type="text" id="abstract" v-model="abstract" required />
-                    </div>
-
-                    <div class="input-group">
-                        <label for="keywords">
-                            Kľúčové slová
-                        </label>
-                        <input type="text" id="keywords" v-model="keywords" required>
+                        <textarea id="content" cols="30" rows="3" v-model="content" required />
                     </div>
 
                     <div class="select-group">
-                        <label for="conference">
-                            Konferencia
+                        <label for="rating_type">
+                            Typ hodnotenia
                         </label>
-                        <select id="conference" v-model="conferenceId" required>
-                            <option v-for="conference in conferences" :key="conference.id" :value="conference.id">
-                                {{ conference.title }}
+                        <select id="rating_type" v-model="ratingType" required>
+                            <option value="1">
+                                A ~ FX
+                            </option>
+                            <option value="0">
+                                Áno / Nie
                             </option>
                         </select>
                     </div>
 
                     <div class="select-group">
-                        <label for="status">
-                            Status
+                        <label for="is_active">
+                            Aktívna
                         </label>
-                        <select id="status" v-model="articleStatusId" required>
-                            <option v-for="article_status in article_statuses" :key="article_status.id" :value="article_status.id">
-                                {{ article_status.name }}
+                        <select id="is_active" v-model="isActive" required>
+                            <option value="1">
+                                Áno
+                            </option>
+                            <option value="0">
+                                Nie
                             </option>
                         </select>
                     </div>
-
                 </div>
 
                 <div class="modal-footer">
@@ -73,18 +64,13 @@
     export default {
         data() {
             return {
-                title: null,
-                abstract:null,
-                keywords:null,
-                conferenceId: null,
-                articleStatusId: null,
-
-                conferences: null,
-                article_statuses: null,
+                content: null,
+                ratingType: null,
+                isActive: null,
             }
         },
         props: {
-            article: {
+            review_feature: {
                 type: Object,
                 required: true,
             },
@@ -93,43 +79,29 @@
             close() {
                 this.$emit('close');
             },
-            async getData() {
-                const conferences_response = await axios.get("/api/conferences");
-                this.conferences = conferences_response.data;
-
-                const article_statuses_response = await axios.get("/api/article_statuses");
-                this.article_statuses = article_statuses_response.data;
-            },
             submit() {
-                axios.post(`/api/articles/${this.article.id}`, {
-                    title: this.title,
-                    abstract: this.abstract,
-                    keywords: this.keywords,
-                    article_status_id: this.articleStatusId,
-                    conference_id: this.conferenceId,
+                axios.put(`/api/review_features/${this.review_feature.id}`, {
+                    content: this.content,
+                    rating_type: this.ratingType,
+                    is_active: this.isActive,
                 })
                 .then(() => {
                     location.reload();
                 })
                 .catch((error) => {
-                    console.error("Chyba pri aktualizácii príspevku: ", error);
-                    alert("Nepodarilo sa aktualizovať príspevok.");
+                    console.error("Chyba pri aktualizácii otázky recenzie: ", error);
+                    alert("Nepodarilo sa aktualizovať otázku recenzie.");
                 });
             },
         },
-        mounted() {
-            this.getData();
-        },
         watch: {
-            article: {
+            review_feature: {
                 immediate: true,
-                handler (newArticle) {
-                    if (newArticle) {
-                        this.title = this.article.title;
-                        this.abstract = this.article.abstract;
-                        this.keywords = this.article.keywords;
-                        this.articleStatusId = this.article.article_statuses_id;
-                        this.conferenceId = this.article.conferences_id;
+                handler (newReviewFeature) {
+                    if (newReviewFeature) {
+                        this.content = this.review_feature.content;
+                        this.ratingType = this.review_feature.rating_type;
+                        this.isActive = this.review_feature.is_active;
                     }
                 }
             },
@@ -219,7 +191,8 @@
     }
 
     .input-group,
-    .select-group {
+    .select-group,
+    .textarea-group {
         display: flex;
         flex-direction: column;
         text-align: left;
@@ -228,13 +201,20 @@
     }
 
     .input-group label,
-    .select-group label {
+    .select-group label,
+    .textarea-group label {
         font-size: 1.2rem;
     }
 
     .input-group input,
     .select-group select {
         height: 40px;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    .textarea-group textarea {
         border-radius: 12px;
         font-size: 1.2rem;
         padding: 8px;

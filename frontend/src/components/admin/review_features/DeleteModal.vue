@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop" v-if="review_feature">
         <div class="modal">
 
             <div class="modal-header">
@@ -11,10 +11,10 @@
 
             <div class="modal-body">
                 <div class="question">
-                    Naozaj chcete odstrániť tento príspevok?
+                    Naozaj chcete odstrániť túto otázku recenzie?
                 </div>
                 <div class="data">
-                    {{ article.title }}
+                    {{ review_feature.content }}
                 </div>
             </div>
 
@@ -33,7 +33,7 @@
 
     export default {
         props: {
-            article: {
+            review_feature: {
                 type: Object,
                 required: true,
             },
@@ -43,17 +43,17 @@
                 this.$emit('close');
             },
             submit() {
-                axios.delete(`/api/articles/${this.article.id}`)
+                axios.delete(`/api/review_features/${this.review_feature.id}`)
                 .then(() => {
                     location.reload();
                 })
                 .catch((error) => {
-                    console.error("Chyba pri odstraňovaní príspevku: ", error);
+                    console.error("Chyba pri odstraňovaní otázy recenzie: ", error);
 
-                    if (this.article.reviews.length > 0) {
-                        alert("Tento príspevok je už recenzovaný.");
+                    if (this.review_feature.reviews.length > 0) {
+                        alert("Táto otázka recenzie je používaná.");
                     } else {
-                        alert("Nepodarilo sa odstrániť príspevok.");
+                        alert("Nepodarilo sa odstrániť otázku recenzie.");
                     }
                 });
             },

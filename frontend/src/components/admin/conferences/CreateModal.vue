@@ -2,60 +2,97 @@
     <div class="modal-backdrop">
         <div class="modal">
 
-            <div class="modal-header">
-                <div class="modal-title">
-                    Pridaj konferenciu
-                </div>
-                <button type="button" class="btn-close" @click="close" />
-            </div>
-
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="start_year">
-                        Začiatočný rok
-                    </label>
-                    <input type="number" id="start_year" v-model="startYear">
+            <form @submit.prevent="submit">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Pridaj konferenciu
+                    </div>
+                    <button type="button" class="btn-close" @click="close" />
                 </div>
 
-                <div class="input-group">
-                    <label for="end_year">
-                        Konečný rok
-                    </label>
-                    <input type="number" id="end_year" v-model="endYear">
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="title">
+                            Názov
+                        </label>
+                        <input type="text" id="title" v-model="title" required>
+                    </div>
+
+                    <div class="textarea-group">
+                        <label for="abstract">
+                            Abstrakt
+                        </label>
+                        <textarea id="abstract" cols="30" rows="3" v-model="abstract" required />
+                    </div>
+
+                    <div class="select-group">
+                        <label for="university">
+                            Miesto konania
+                        </label>
+                        <select id="university" v-model="universityId" required>
+                            <option v-for="university in universities" :key="university.id" :value="university.id">
+                                {{ university.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="conference_date">
+                            Dátum konferencie
+                        </label>
+                        <input type="date" id="conference_date" v-model="conferenceDate" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="submission_deadline">
+                            Deadline odovzdania prác
+                        </label>
+                        <input type="date" id="submission_deadline" v-model="submissionDeadline" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="review_assignment_deadline">
+                            Deadline na priradenie publikácie 
+                        </label>
+                        <input type="date" id="review_assignment_deadline" v-model="reviewAssignmentDeadline" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="review_submission_deadline">
+                            Deadline na recenzovanie
+                        </label>
+                        <input type="date" id="review_submission_deadline" v-model="reviewSubmissionDeadline" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="review_publication_date">
+                            Dátum zverejnenia recenzií
+                        </label>
+                        <input type="date" id="review_publication_date" v-model="reviewPublicationDate" required>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="is_active">
+                            Aktívna
+                        </label>
+                        <select id="is_active" v-model="isActive" required>
+                            <option value="1">
+                                Áno
+                            </option>
+                            <option value="0">
+                                Nie
+                            </option>
+                        </select>
+                    </div>
+
                 </div>
 
-                <div class="input-group">
-                    <label for="conference_date">
-                        Dátum konferencie
-                    </label>
-                    <input type="date" id="conference_date" v-model="conferenceDate">
+                <div class="modal-footer">
+                    <button type="submit" class="btn-submit">
+                        Potvrď
+                    </button>
                 </div>
-
-                <div class="input-group">
-                    <label for="submission_deadline">
-                        Deadline odovzdania prác
-                    </label>
-                    <input type="date" id="submission_deadline" v-model="submissionDeadline">
-                </div>
-
-                <div class="select-group">
-                    <label for="university">
-                        Miesto konania
-                    </label>
-                    <select id="university" v-model="universityId">
-                        <option v-for="university in universities" :key="university.id" :value="university.id">
-                            {{ university.name }}
-                        </option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-submit" @click="submit">
-                    Potvrď
-                </button>
-            </div>
+            </form>
 
         </div>
     </div>
@@ -67,11 +104,15 @@
     export default {
         data() {
             return {
-                startYear: null,
-                endYear: null,
+                title: null,
+                abstract: null,
+                universityId: null,
                 conferenceDate: null,
                 submissionDeadline: null,
-                universityId: null,
+                reviewAssignmentDeadline: null,
+                reviewSubmissionDeadline: null,
+                reviewPublicationDate: null,
+                isActive: 1,
 
                 universities: null,
             }
@@ -86,11 +127,15 @@
             },
             submit() {
                 axios.post("/api/conferences", {
-                    start_year: this.startYear,
-                    end_year: this.endYear,
+                    title: this.title,
+                    abstract: this.abstract,
+                    location_id: this.universityId,
                     conference_date: this.conferenceDate,
                     submission_deadline: this.submissionDeadline,
-                    location_id: this.universityId,
+                    review_assignment_deadline: this.reviewAssignmentDeadline,
+                    review_submission_deadline: this.reviewSubmissionDeadline,
+                    review_publication_date: this.reviewPublicationDate,
+                    is_active: this.isActive,
                 })
                 .then(() => {
                     location.reload();

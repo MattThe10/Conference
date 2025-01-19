@@ -33,6 +33,7 @@ class ReviewFeature extends Model
 
 	protected $fillable = [
 		'content',
+		'rating_type',
 		'is_active'
 	];
 

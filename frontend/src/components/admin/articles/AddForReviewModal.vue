@@ -2,27 +2,29 @@
     <div class="modal-backdrop">
         <div class="modal">
 
-            <div class="modal-header">
-                <div class="modal-title">
-                    Priraď príspevok
+            <form @submit.prevent="submit">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Priraď príspevok
+                    </div>
+                    <button type="button" class="btn-close" @click="close" />
                 </div>
-                <button type="button" class="btn-close" @click="close" />
-            </div>
 
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="email">
-                        Email používateľa 
-                    </label>
-                    <input type="email" id="email" v-model="email" >
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="email">
+                            Email používateľa 
+                        </label>
+                        <input type="email" id="email" v-model="email" required>
+                    </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-submit" @click="submit">
-                    Potvrď
-                </button>
-            </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-submit">
+                        Potvrď
+                    </button>
+                </div>
+            </form>
 
         </div>
     </div>
@@ -35,6 +37,7 @@
         data() {
             return {
                 email: null,
+                articles: [],
             }
         },
         props: {
@@ -47,13 +50,25 @@
             close() {
                 this.$emit('close');
             },
+            async getData() {
+                    const articles_response = await axios.get('/api/articles');
+                    const articles_data = articles_response.data;
+                    this.articles = articles_data.filter(article => {
+                        return this.selectedArticles.includes(article.id) && ['accepted', 'accepted_with_conditions'].includes(article.article_status.key);
+                    });
+            },
             async submit() {
                 try {
                     const user_response = await axios.get(`/api/users?search=${this.email}`);
-                    const user = user_response.data;console.log(user);
+                    const user = user_response.data;
                     
                     if (user.length == 0) {
                         alert('Používateľ s týmto e-mailom neexistuje.');
+                        return;
+                    }
+
+                    if (this.selectedArticles.length != this.articles.length) {
+                        alert('Neplatné príspevky. Prosím vyberajte iba prijaté príspevky.');
                         return;
                     }
 
@@ -61,14 +76,24 @@
                         axios.post("/api/reviews", {
                             user_id: user[0].id,
                             article_id: selectedArticle,
+                            article_for_review: true,
                         })
                         .then(() => {
+                            alert('Príspevky boli priradené recenzentovi.');
                             location.reload();
                         });
                     });
                 } catch (error) {
                     console.error('Chyba pri priradení príspevkov: ', error);
                     alert('Nepodarilo sa priradiť príspevok. Skontrolujte e-mail.');
+                }
+            },
+        },
+        watch: {
+            selectedArticles: {
+                immediate: true,
+                handler () {
+                    this.getData();
                 }
             },
         },

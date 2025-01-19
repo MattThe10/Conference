@@ -40,7 +40,13 @@ class UserController extends Controller
                     ->orwhereRaw('LOWER(surname) LIKE?', ['%' . $search . '%']) // Filter by surname 
                     ->orwhereRaw('LOWER(email) LIKE ?', ['%'. $search . '%']) // Filter by email 
                     ->orWhereHas('faculty', function ($query) use ($search) {
-                        $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related faculty name
+                        $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']) // Filter by related faculty name
+                            ->orWhereHas('university', function ($query) use ($search) {
+                                $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by related university name
+                            });
+                    })
+                    ->orWhereHas('role', function ($query) use ($search) {
+                        $query->whereRaw('LOWER(name) LIKE ?', ['%' . $search . '%']); // Filter by role
                     });
             });
         }   

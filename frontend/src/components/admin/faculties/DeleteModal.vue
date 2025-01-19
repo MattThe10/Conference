@@ -1,5 +1,5 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop" v-if="faculty">
         <div class="modal">
 
             <div class="modal-header">
@@ -11,10 +11,10 @@
 
             <div class="modal-body">
                 <div class="question">
-                    Naozaj chcete odstrániť tento príspevok?
+                    Naozaj chcete odstrániť túto fakultu?
                 </div>
                 <div class="data">
-                    {{ article.title }}
+                    {{ faculty.name }}
                 </div>
             </div>
 
@@ -33,7 +33,7 @@
 
     export default {
         props: {
-            article: {
+            faculty: {
                 type: Object,
                 required: true,
             },
@@ -43,17 +43,17 @@
                 this.$emit('close');
             },
             submit() {
-                axios.delete(`/api/articles/${this.article.id}`)
+                axios.delete(`/api/faculties/${this.faculty.id}`)
                 .then(() => {
                     location.reload();
                 })
                 .catch((error) => {
-                    console.error("Chyba pri odstraňovaní príspevku: ", error);
+                    console.error("Chyba pri odstraňovaní fakulty: ", error);
 
-                    if (this.article.reviews.length > 0) {
-                        alert("Tento príspevok je už recenzovaný.");
+                    if (this.faculty.users.length > 0) {
+                        alert("K tejto fakulte sú priradení používatelia.");
                     } else {
-                        alert("Nepodarilo sa odstrániť príspevok.");
+                        alert("Nepodarilo sa odstrániť fakultu.");
                     }
                 });
             },

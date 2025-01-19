@@ -32,18 +32,24 @@ class Conference extends Model
 	protected $table = 'conferences';
 
 	protected $casts = [
-		'start_year' => 'integer',
-		'end_year' => 'integer',
 		'conference_date' => 'datetime',
 		'submission_deadline' => 'datetime',
+		'review_assignment_deadline' => 'datetime',
+		'review_submission_deadline' => 'datetime',
+		'review_publication_date' => 'datetime',
+		'is_active' => 'int',
 		'location_id' => 'int'
 	];
 
 	protected $fillable = [
-		'start_year',
-		'end_year',
+		'title',
+		'abstract',
 		'conference_date',
 		'submission_deadline',
+		'review_assignment_deadline',
+		'review_submission_deadline',
+		'review_publication_date',
+		'is_active',
 		'location_id'
 	];
 

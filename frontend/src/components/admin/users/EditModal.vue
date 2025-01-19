@@ -2,72 +2,74 @@
     <div class="modal-backdrop" v-if="user">
         <div class="modal">
 
-            <div class="modal-header">
-                <div class="modal-title">
-                    Uprav používateľa
-                </div>
-                <button type="button" class="btn-close" @click="close" />
-            </div>
-
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="email">
-                        Email
-                    </label>
-                    <input type="email" id="email" v-model="email">
+            <form @submit.prevent="submit">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        Uprav používateľa
+                    </div>
+                    <button type="button" class="btn-close" @click="close" />
                 </div>
 
-                <div class="input-group">
-                    <label for="password">
-                        Heslo
-                    </label>
-                    <input type="password" id="password" v-model="password">
-                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="email">
+                            Email
+                        </label>
+                        <input type="email" id="email" v-model="email" required>
+                    </div>
 
-                <div class="input-group">
-                    <label for="name">
-                        Meno
-                    </label>
-                    <input type="text" id="name" v-model="name">
-                </div>
+                    <div class="input-group">
+                        <label for="password">
+                            Heslo
+                        </label>
+                        <input type="password" id="password" v-model="password">
+                    </div>
 
-                <div class="input-group">
-                    <label for="surname">
-                        Priezvisko
-                    </label>
-                    <input type="text" id="surname" v-model="surname">
-                </div>
+                    <div class="input-group">
+                        <label for="name">
+                            Meno
+                        </label>
+                        <input type="text" id="name" v-model="name" required>
+                    </div>
 
-                <div class="select-group">
-                    <label for="faculty">
-                        Škola
-                    </label>
-                    <select id="faculty" v-model="facultyId">
-                        <optgroup v-for="university in universities" :key="university.id" :label="university.name">
-                            <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
-                                {{ faculty.name }}
+                    <div class="input-group">
+                        <label for="surname">
+                            Priezvisko
+                        </label>
+                        <input type="text" id="surname" v-model="surname" required>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="faculty">
+                            Škola
+                        </label>
+                        <select id="faculty" v-model="facultyId" required>
+                            <optgroup v-for="university in universities" :key="university.id" :label="university.name">
+                                <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
+                                    {{ faculty.name }}
+                                </option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="select-group">
+                        <label for="role">
+                            Rola
+                        </label>
+                        <select id="role" v-model="roleId" required>
+                            <option v-for="role in roles" :key="role.id" :value="role.id">
+                                {{ role.name }}
                             </option>
-                        </optgroup>
-                    </select>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="select-group">
-                    <label for="role">
-                        Rola
-                    </label>
-                    <select id="role" v-model="roleId">
-                        <option v-for="role in roles" :key="role.id" :value="role.id">
-                            {{ role.name }}
-                        </option>
-                    </select>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-submit">
+                        Potvrď
+                    </button>
                 </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn-submit" @click="submit">
-                    Potvrď
-                </button>
-            </div>
+            </form>
 
         </div>
     </div>

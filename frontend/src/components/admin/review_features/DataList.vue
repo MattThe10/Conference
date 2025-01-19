@@ -7,7 +7,7 @@
             <div class="list-header">
                 <div class="list-title">
                     <h2>
-                        Používatelia
+                        Otázky recenzie
                     </h2>
                 </div>
                 <div class="list-search">
@@ -23,45 +23,33 @@
                         ID
                     </th>
                     <th>
-                        Email
+                        Obsah
                     </th>
                     <th>
-                        Meno
-                    </th>
-                    <th>
-                        Priezvisko
-                    </th>
-                    <th>
-                        Rola
+                        Aktívna
                     </th>
                     <th>
                         Operácie
                     </th>
                 </tr>
                 <div class="data-list">
-                    <tr v-for="user in users" :key="user.id" @click="showDetailsModal(user)">
+                    <tr v-for="review_feature in review_features" :key="review_feature.id" @click="showDetailsModal(review_feature)">
                         <td>
-                            {{ user.id }}
+                            {{ review_feature.id }}
                         </td>
                         <td>
-                            {{ user.email }}
+                            {{ review_feature.content }}
                         </td>
                         <td>
-                            {{ user.name }}
-                        </td>
-                        <td>
-                            {{ user.surname }}
-                        </td>
-                        <td>
-                            {{ user.role.name }}
+                            {{ review_feature.is_active == 1 ? 'Áno' : 'Nie' }}
                         </td>
                         <td class="operations">
-                            <button @click.stop="showEditModal(user)">
+                            <button @click.stop="showEditModal(review_feature)">
                                 Upraviť
                             </button>
-                            <!-- <button @click.stop="showDeleteModal(user)">
+                            <button @click.stop="showDeleteModal(review_feature)">
                                 Odstrániť
-                            </button> -->
+                            </button>
                         </td>
                     </tr>
                 </div>
@@ -78,17 +66,17 @@
 
         <EditModal
             v-show="isEditModalVisible"
-            :user="selectedData"
+            :review_feature="selectedData"
             @close="closeEditModal" />
 
         <DeleteModal
             v-show="isDeleteModalVisible"
-            :user="selectedData"
+            :review_feature="selectedData"
             @close="closeDeleteModal" />
 
         <DetailsModal
             v-show="isDetailsModalVisible"
-            :user="selectedData"
+            :review_feature="selectedData"
             @close="closeDetailsModal" />
     </div>
 </template>
@@ -113,7 +101,7 @@ export default {
     },
     data() {
         return {
-            users: [],
+            review_features: [],
             isCreateModalVisible: false,
             isEditModalVisible: false,
             isDeleteModalVisible: false,
@@ -124,12 +112,12 @@ export default {
     },
     methods: {
         async getData() {
-            const users_response = await axios.get("/api/users");
-            this.users = users_response.data;
+            const review_features_response = await axios.get("/api/review_features");
+            this.review_features = review_features_response.data;
         },
         async searchData() {
-            const users_response = await axios.get(`/api/users?search=${ this.search }`);
-            this.users = users_response.data;
+            const review_features_response = await axios.get(`/api/review_features?search=${ this.search }`);
+            this.review_features = review_features_response.data;
         },
         showCreateModal() {
             this.isCreateModalVisible = true;

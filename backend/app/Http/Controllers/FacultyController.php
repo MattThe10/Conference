@@ -20,7 +20,7 @@ class FacultyController extends Controller
 	{
 		// Initialize the query with a relationship to 'university' 
 		$faculties = Faculty::query() 
-			->with(['university']); 
+			->with(['university', 'users']); 
 			
 		//Check if there a 'search' parameter in the request 
 		if ($request->has('search') && $request->search !=	 null) {

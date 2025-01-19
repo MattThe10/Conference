@@ -1,59 +1,61 @@
 <template>
-    <div class="modal-backdrop" v-if="article">
+    <div class="modal-backdrop">
         <div class="modal">
 
             <form @submit.prevent="submit">
                 <div class="modal-header">
                     <div class="modal-title">
-                        Uprav príspevok
+                        Pridaj fakultu
                     </div>
                     <button type="button" class="btn-close" @click="close" />
                 </div>
 
                 <div class="modal-body">
                     <div class="input-group">
-                        <label for="title">
-                            Názov
+                        <label for="name">
+                            Fakulta
                         </label>
-                        <input type="text" id="title" v-model="title" required>
+                        <input type="text" id="name" v-model="name" required>
                     </div>
 
-                    <div class="textarea-group">
-                        <label for="abstract">
-                            Abstrakt
+                    <div class="select-group">
+                        <label for="university">
+                            Univerzita
                         </label>
-                        <textarea type="text" id="abstract" v-model="abstract" required />
+                        <select id="university" v-model="universityId" required>
+                            <option v-for="university in universities" :key="university.id" :value="university.id">
+                                {{ university.name }}
+                            </option>
+                        </select>
                     </div>
 
                     <div class="input-group">
-                        <label for="keywords">
-                            Kľúčové slová
+                        <label for="address">
+                            Adresa
                         </label>
-                        <input type="text" id="keywords" v-model="keywords" required>
+                        <input type="text" id="address" v-model="address" required>
                     </div>
 
-                    <div class="select-group">
-                        <label for="conference">
-                            Konferencia
+                    <div class="input-group">
+                        <label for="city">
+                            Mesto
                         </label>
-                        <select id="conference" v-model="conferenceId" required>
-                            <option v-for="conference in conferences" :key="conference.id" :value="conference.id">
-                                {{ conference.title }}
-                            </option>
-                        </select>
+                        <input type="text" id="city" v-model="city" required>
                     </div>
 
-                    <div class="select-group">
-                        <label for="status">
-                            Status
+                    <div class="input-group">
+                        <label for="postal_code">
+                            PSČ
                         </label>
-                        <select id="status" v-model="articleStatusId" required>
-                            <option v-for="article_status in article_statuses" :key="article_status.id" :value="article_status.id">
-                                {{ article_status.name }}
-                            </option>
-                        </select>
+                        <input type="text" id="postal_code" v-model="postalCode">
                     </div>
 
+                    <div class="input-group">
+                        <label for="country">
+                            Krajina
+                        </label>
+                        <input type="text" id="country" v-model="country" required>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -73,66 +75,44 @@
     export default {
         data() {
             return {
-                title: null,
-                abstract:null,
-                keywords:null,
-                conferenceId: null,
-                articleStatusId: null,
+                name: null,
+                universityId: null,
+                address: null,
+                city: null,
+                postalCode: null,
+                country: null,
 
-                conferences: null,
-                article_statuses: null,
+                universities: [],
             }
-        },
-        props: {
-            article: {
-                type: Object,
-                required: true,
-            },
         },
         methods: {
             close() {
                 this.$emit('close');
             },
             async getData() {
-                const conferences_response = await axios.get("/api/conferences");
-                this.conferences = conferences_response.data;
-
-                const article_statuses_response = await axios.get("/api/article_statuses");
-                this.article_statuses = article_statuses_response.data;
+                const universities_response = await axios.get("/api/universities");
+                this.universities = universities_response.data;
             },
             submit() {
-                axios.post(`/api/articles/${this.article.id}`, {
-                    title: this.title,
-                    abstract: this.abstract,
-                    keywords: this.keywords,
-                    article_status_id: this.articleStatusId,
-                    conference_id: this.conferenceId,
+                axios.post("/api/faculties", {
+                    name: this.name,
+                    university_id: this.universityId,
+                    address: this.address,
+                    city: this.city,
+                    postal_code: this.postalCode,
+                    country: this.country,
                 })
                 .then(() => {
                     location.reload();
                 })
                 .catch((error) => {
-                    console.error("Chyba pri aktualizácii príspevku: ", error);
-                    alert("Nepodarilo sa aktualizovať príspevok.");
+                    console.error("Chyba pri vytváraní fakulty: ", error);
+                    alert("Nepodarilo sa vytvoriť fakultu.");
                 });
             },
         },
         mounted() {
             this.getData();
-        },
-        watch: {
-            article: {
-                immediate: true,
-                handler (newArticle) {
-                    if (newArticle) {
-                        this.title = this.article.title;
-                        this.abstract = this.article.abstract;
-                        this.keywords = this.article.keywords;
-                        this.articleStatusId = this.article.article_statuses_id;
-                        this.conferenceId = this.article.conferences_id;
-                    }
-                }
-            },
         },
     };
 </script>

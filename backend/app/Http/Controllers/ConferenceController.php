@@ -22,7 +22,7 @@ class ConferenceController extends Controller
     {
         // Initialize the query
         $conferences = Conference::query()
-            ->with(['university', 'articles']);
+            ->with(['university', 'articles.documents']);
             
         //Check if there a 'search' parameter in the request 
         if ($request->has('search') && $request->search !=   null) {
@@ -32,8 +32,7 @@ class ConferenceController extends Controller
         
             // Apply filtering based on the search term 
             $conferences = $conferences->where(function ($query) use ($search) {
-                $query->where('start_year', 'LIKE', '%' . $search . '%') // start_year
-                      ->orWhere('end_year', 'LIKE', '%' . $search . '%') // end_year
+                $query->where('title', 'LIKE', '%' . $search . '%') // title
                       ->orWhereHas('university', function ($query) use ($search) {
                         $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']); // Filter by related university name
                     });
@@ -59,7 +58,8 @@ class ConferenceController extends Controller
 
     public function show($conference_id)
     {
-        $conference = Conference::findOrFail($conference_id);
+        $conference = Conference::with(['articles.conference', 'articles.article_status', 'articles.reviews', 'articles.documents', 'articles.users'])
+            ->findOrFail($conference_id);
 
         return response()->json($conference);
     }
@@ -78,19 +78,27 @@ class ConferenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'start_year'          => ['required', 'integer'],
-		    'end_year'            => ['required', 'integer'],
-		    'conference_date'     => ['required', 'date'],
-		    'submission_deadline' => ['required', 'date'],
-		    'location_id'         => ['required', 'exists:universities,id'],
+            'title'                         => ['required', 'string'],
+		    'abstract'                      => ['required', 'string'],
+		    'conference_date'               => ['required', 'date'],
+		    'submission_deadline'           => ['required', 'date'],
+            'review_assignment_deadline'    => ['required', 'date'],
+            'review_submission_deadline'    => ['required', 'date'],
+            'review_publication_date'       => ['required', 'date'],
+		    'location_id'                   => ['required', 'exists:universities,id'],
+            'is_active'                     => ['required', 'integer'],
         ]);
 
         Conference::create([
-            'start_year'          => $validated['start_year'],
-		    'end_year'            => $validated['end_year'],
-		    'conference_date'     => $validated['conference_date'],
-		    'submission_deadline' => $validated['submission_deadline'],
-		    'location_id'         => $validated['location_id'],
+            'title'                         => $validated['title'],
+		    'abstract'                      => $validated['abstract'],
+		    'conference_date'               => $validated['conference_date'],
+		    'submission_deadline'           => $validated['submission_deadline'],
+            'review_assignment_deadline'    => $validated['review_assignment_deadline'],
+            'review_submission_deadline'    => $validated['review_submission_deadline'],
+            'review_publication_date'       => $validated['review_publication_date'],
+		    'location_id'                   => $validated['location_id'],
+            'is_active'                     => $validated['is_active'],
         ]);
 
         return response()->json([
@@ -112,21 +120,29 @@ class ConferenceController extends Controller
     public function update(Request $request, $conference_id)
     {
         $validated = $request->validate([
-            'start_year'          => ['required', 'integer'],
-		    'end_year'            => ['required', 'integer'],
-		    'conference_date'     => ['required', 'date'],
-		    'submission_deadline' => ['required', 'date'],
-		    'location_id'         => ['required', 'exists:universities,id'],
+            'title'                         => ['required', 'string'],
+		    'abstract'                      => ['required', 'string'],
+		    'conference_date'               => ['required', 'date'],
+		    'submission_deadline'           => ['required', 'date'],
+            'review_assignment_deadline'    => ['required', 'date'],
+            'review_submission_deadline'    => ['required', 'date'],
+            'review_publication_date'       => ['required', 'date'],
+		    'location_id'                   => ['required', 'exists:universities,id'],
+            'is_active'                     => ['required', 'integer'],
         ]);
 
         $conference = Conference::findOrFail($conference_id);
 
         $conference->update([
-            'start_year'          => $validated['start_year'],
-		    'end_year'            => $validated['end_year'],
-		    'conference_date'     => $validated['conference_date'],
-		    'submission_deadline' => $validated['submission_deadline'],
-		    'location_id'         => $validated['location_id'],
+            'title'                         => $validated['title'],
+		    'abstract'                      => $validated['abstract'],
+		    'conference_date'               => $validated['conference_date'],
+		    'submission_deadline'           => $validated['submission_deadline'],
+            'review_assignment_deadline'    => $validated['review_assignment_deadline'],
+            'review_submission_deadline'    => $validated['review_submission_deadline'],
+            'review_publication_date'       => $validated['review_publication_date'],
+		    'location_id'                   => $validated['location_id'],
+            'is_active'                     => $validated['is_active'],
         ]);
 
         return response()->json([
