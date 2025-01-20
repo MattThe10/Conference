@@ -3,8 +3,7 @@
         <h2>{{ conference.name }}</h2>
         <p>Dátum konferencie {{ conference.conference_date_sk }}</p>
         <p>Deadline {{ conference.submission_deadline_sk }}</p>
-        <button @click="$emit('openForm', conference)" class="conference-create-btn btn"
-            :class="{ disabled: isDisabled(conference) }">+</button>
+        <button @click="$emit('openForm', conference)" class="conference-create-btn btn">+</button>
     </div>
 </template>
 
