@@ -2,6 +2,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginForm from '@/components/LoginForm.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
+import ForgotPasswordForm from '@/components/ForgotPasswordForm.vue'
+import ResetPasswordForm from '@/components/ResetPasswordForm.vue'
 import LandingPage from '@/components/LandingPage.vue'
 import ArticlesPage from '@/components/ArticlePage.vue'
 import ProfilePage from '@/components/ProfilePage.vue'
@@ -34,6 +36,17 @@ const routes = [
             path: '/register',
             name: 'RegisterForm',
             component: RegisterForm
+        },
+        {
+            path: '/forgot_password',
+            name: 'ForgotPasswordForm',
+            component: ForgotPasswordForm
+        },
+        {
+            path: '/password-reset/:token',
+            name: 'ResetPasswordForm',
+            component: ResetPasswordForm,
+            props: route => ({ token: route.params.token, email: route.query.email }),
         },
         {
             path: '/home',
