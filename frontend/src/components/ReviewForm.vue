@@ -6,46 +6,48 @@
             <div class="scrollable">
                 <!-- <label for="reviewer">Reviewer</label>
                 <input v-model="reviewer" id="reviewer" required /> -->
-
+                
                 <div class="input-group" v-for="review_feature in review_features" :key="review_feature.id">
-                    <div class="question">
-                        {{ review_feature.content }}
-                    </div>
-                    <div class="radios" v-if="review_feature.rating_type == 1">
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="6" checked>
-                            A
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="5">
-                            B
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="4">
-                            C
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="3">
-                            D
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="2">
-                            E
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="1">
-                            FX
-                        </label>
-                    </div>
-                    <div class="radios" v-if="review_feature.rating_type == 0">
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="1" checked>
-                            Áno
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="0">
-                            Nie
-                        </label>
+                    <div v-if="review_feature.is_active == 1">
+                        <div class="question">
+                            {{ review_feature.content }}
+                        </div>
+                        <div class="radios" v-if="review_feature.rating_type == 1">
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="6" checked>
+                                A
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="5">
+                                B
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="4">
+                                C
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="3">
+                                D
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="2">
+                                E
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="1">
+                                FX
+                            </label>
+                        </div>
+                        <div class="radios" v-if="review_feature.rating_type == 0">
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="1" checked>
+                                Áno
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" class="radio" :name="'review_feature_' + review_feature.id" v-model="features[review_feature.id]" value="0">
+                                Nie
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -72,7 +74,7 @@
             </div>
 
             <div class="btn-wrapper">
-                <button type="submit" class="btn">Odoslať</button>
+                <button type="submit" class="btn">Uložiť</button>
             </div>
         </form>
     </div>
@@ -100,7 +102,9 @@ export default {
     methods: {
         async getReviewFeatures() {
             const review_features_response = await axios.get(`/api/review_features`);
-            this.review_features = review_features_response.data;
+            this.review_features = review_features_response.data.sort((a, b) => {
+                return b.rating_type - a.rating_type;
+            });
 
             this.review_features.forEach(feature => {
                 if (feature.rating_type === 1) {

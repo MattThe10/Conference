@@ -88,7 +88,11 @@ export default {
                     type: element['rating_type'],
                     rating: element['pivot']['rating'],
                     status: element['pivot']['status']
-                }));console.log(this.review_features);
+                }));
+
+            this.review_features = this.review_features.sort((a, b) => {
+                return b.type - a.type;
+            });
 
             this.pros = this.review.pro;
             this.cons = this.review.con;

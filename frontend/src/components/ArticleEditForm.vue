@@ -3,7 +3,8 @@
         <h3>Uprav príspevok</h3>
         <form id="article-form">
             <label for="title">Názov</label>
-            <input type="text" v-model="title" id="title" required />
+            <input type="text" v-model="title" id="title" @input="clearError('email')" required />
+            <p v-if="errors.title" class="error">{{ errors.title[0] }}</p>
 
             <label for="email">Pridať autora</label>
             <div>
@@ -17,13 +18,21 @@
                 </li>
             </ul>
 
+            <label for="abstract">Abstrakt</label>
+            <textarea id="abstract" cols="30" rows="3" v-model="abstract"></textarea>
+            <p v-if="errors.abstract" class="error">{{ errors.abstract[0] }}</p>
+
+            <label for="keywords">Kľúčové slová</label>
+            <input type="text" id="keywords" v-model="keywords">
+            <p v-if="errors.keywords" class="error">{{ errors.keywords[0] }}</p>
+
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
                 @change="onFileChange($event, 'file_pdf');" accept=".pdf">
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
                 @change="onFileChange($event, 'file_word');" accept=".doc, .docx">
 
-            <button type="button" class="btn" @click="submitArticle" id="btn-submit">Odoslať</button>
+            <button type="button" class="btn" :disabled="!isFormValid" @click="submitArticle">Odoslať</button>
             <button type="button" class="btn" @click="saveArticle" id="btn-submit">Uložiť</button>
         </form>
     </div>
@@ -42,9 +51,14 @@ export default {
             users: [],
             user_ids: [],
             title: this.article.title,
+            abstract: this.article.abstract,
+            keywords: this.article.keywords,
             new_author_email: '',
             file_pdf: null,
             file_word: null,
+            files_uploaded: false,
+
+            errors: {},
         }
     },
     methods: {
@@ -86,23 +100,27 @@ export default {
                 this.user_ids.push(user.id)
             });
         },
+        async getData() {
+            const article_response = await axios.get(`/api/articles/${this.article.id}`);
+            const article_data = article_response.data;
+
+            if (article_data.documents.length >= 2) this.files_uploaded = true;
+        },
         submitArticle() {
             this.updateArticle('submit');
 
-            console.log(`Article for ${this.conference.name}:`, {
+            console.log(`Article for ${this.title}:`, {
                 title: this.title,
-                author: this.author
+                // author: this.author
             });
-            this.$emit('close');
         },
         saveArticle() {
             this.updateArticle('save');
 
-            console.log(`Article for ${this.conference.name}:`, {
+            console.log(`Article for ${this.title}:`, {
                 title: this.title,
-                author: this.author
+                // author: this.author
             });
-            this.$emit('close');
         },
         // Handle file input change and store the selected file
         onFileChange(event, file_type) {
@@ -127,6 +145,8 @@ export default {
                 // Put values to formData
                 const form_data = new FormData();
                 form_data.append('title', this.title);
+                form_data.append('abstract', this.abstract);
+                form_data.append('keywords', this.keywords);
 
                 this.user_ids.forEach(author_id => {
                     form_data.append('user_ids[]', author_id)
@@ -165,10 +185,14 @@ export default {
                     }
                 });
 
+                this.$emit('close');
+
                 // Reload page after successful update
                 window.location.reload();
             } catch (error) {
                 console.log("Article update error: ", error);
+
+                this.errors = error.response.data.errors;
 
                 if (error.response) {
                     if (error.response.data.errors) {
@@ -181,10 +205,28 @@ export default {
                 }
             }
         },
+        clearError(field) {
+            if (this.errors[field]) {
+                delete this.errors[field];
+            }
+        },
     },
     mounted() {
         this.getUsers();
         this.setUsers();
+        this.getData();
+    },
+    computed: {
+        isFormValid() {
+            return (
+                this.title !== '' &&
+                this.abstract !== '' &&
+                this.keywords !== '' &&
+                (this.files_uploaded || this.file_pdf !== null) &&
+                (this.files_uploaded || this.file_word !== null) &&
+                this.user_ids.length >= 1
+            );
+        }
     },
 };
 </script>
@@ -199,6 +241,11 @@ export default {
     border-radius: 10px;
     margin-bottom: 0.5rem;
     width: 100%;
+}
+
+.btn:disabled {
+    opacity: .5;
+    pointer-events: none;
 }
 
 form {
@@ -256,5 +303,9 @@ form {
     border: none;
     border-radius: 12px;
     color: #fefae0;
+}
+
+.error {
+    color: #dc3545;
 }
 </style>

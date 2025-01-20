@@ -106,7 +106,9 @@ export default {
 
             this.conferences = conferences_response.data.map(element => ({
                 id: element['id'],
-                name: 'Konferencia ' + element['start_year'] + ' / ' + element['end_year'],
+                name: element['title'],
+                abstract: element['abstract'],
+                keywords: element['keywords'],
                 place: element['university']['name'],
                 street: element['university']['address'],
                 city: element['university']['city'],

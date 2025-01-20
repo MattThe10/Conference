@@ -3,11 +3,12 @@
         <h2>{{ conference.name }}</h2>
         <form id="article-form">
             <label for="title">Názov</label>
-            <input type="text" v-model="title" id="title" required />
+            <input type="text" v-model="title" id="title" @input="clearError('title')" required />
+            <p v-if="errors.title" class="error">{{ errors.title[0] }}</p>
 
             <label for="email">Autor</label>
             <div>
-                <input type="email" v-model="new_author_email" placeholder="Zadajte e-mail" />
+                <input type="email" v-model="new_author_email" placeholder="Zadajte e-mail" required />
                 <button type="button" class="btn" @click="addAuthor">Pridať</button>
             </div>
             <ul>
@@ -16,11 +17,22 @@
                     <button type="button" @click="removeAuthor(id)">Odstrániť</button>
                 </li>
             </ul>
-            <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
-                @change="onFileChange($event, 'file_pdf');" accept=".pdf" required>
+
+            <label for="abstract">Abstrakt</label>
+            <textarea id="abstract" cols="30" rows="3" v-model="abstract" @input="clearError('abstract')"></textarea>
+            <p v-if="errors.abstract" class="error">{{ errors.abstract[0] }}</p>
+
+            <label for="keywords">Kľúčové slová</label>
+            <input type="text" id="keywords" v-model="keywords" @input="clearError('keywords')">
+            <p v-if="errors.keywords" class="error">{{ errors.keywords[0] }}</p>
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
-                @change="onFileChange($event, 'file_word');" accept=".doc, .docx" required>
+                @change="onFileChange($event, 'file_pdf');" accept=".pdf" @input="clearError('file_pdf')" required>
+            <p v-if="errors.file_pdf" class="error">{{ errors.file_pdf[0] }}</p>
+
+            <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
+                @change="onFileChange($event, 'file_word');" accept=".doc, .docx" @input="clearError('file_word')" required>
+            <p v-if="errors.file_word" class="error">{{ errors.file_word[0] }}</p>
 
             <button type="button" class="btn" @click="submitArticle" id="btn-submit">Odoslať</button>
             <button type="button" class="btn" @click="saveArticle" id="btn-submit">Uložiť</button>
@@ -39,9 +51,13 @@ export default {
             users: [],
             user_ids: [],
             title: '',
+            abstract: '',
+            keywords: '',
             new_author_email: '',
             file_pdf: null,
             file_word: null,
+
+            errors: {},
         }
     },
     name: "ArticlesForm",
@@ -90,7 +106,6 @@ export default {
                 title: this.title,
                 author: this.author
             });
-            this.$emit('close');
         },
         async saveArticle() {
             await this.updateArticle('save');
@@ -99,7 +114,6 @@ export default {
                 title: this.title,
                 author: this.author
             });
-            this.$emit('close');
         },
         // Handle file input change and store the selected file
         onFileChange(event, file_type) {
@@ -124,6 +138,8 @@ export default {
                 // Put values to formData
                 const form_data = new FormData();
                 form_data.append('title', this.title);
+                form_data.append('abstract', this.abstract);
+                form_data.append('keywords', this.keywords);
 
                 this.user_ids.forEach(author_id => {
                     form_data.append('user_ids[]', author_id)
@@ -162,8 +178,12 @@ export default {
 
                 // Reload page after successful update
                 // window.location.reload();
+
+                this.$router.push({ name: 'ArticlesPage' });
             } catch (error) {
                 console.log("Article update error: ", error);
+
+                this.errors = error.response.data.errors;
 
                 if (error.response) {
                     if (error.response.data.errors) {
@@ -174,6 +194,11 @@ export default {
                         this.errorMessages = error.response.data.message || "Uknown error";
                     }
                 }
+            }
+        },
+        clearError(field) {
+            if (this.errors[field]) {
+                delete this.errors[field];
             }
         },
     },
@@ -225,5 +250,9 @@ export default {
 #btn-submit {
     padding: 5px;
     font-size: 1.5rem;
+}
+
+.error {
+    color: #dc3545;
 }
 </style>

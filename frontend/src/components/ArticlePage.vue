@@ -136,10 +136,12 @@ export default {
                 .map(element => ({
                     id: element['id'],
                     title: element['title'],
-                    conference: 'Konferencia ' + element['conference']['start_year'] + ' / ' + element['conference']['end_year'],
+                    abstract: element['abstract'],
+                    keywords: element['keywords'],
+                    conference: element['conference']['title'],
                     status: element['article_status']['name'],
                     authors: element['users'],
-                    date: new Date(element['created_at']).toLocaleDateString('sk-SK', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    date: new Date(element['conference']['submission_deadline']).toLocaleDateString('sk-SK', { year: 'numeric', month: 'long', day: 'numeric' }),
                     reviews: element['reviews'],
                 }));
 
@@ -148,10 +150,12 @@ export default {
                 .map(element => ({
                     id: element['id'],
                     title: element['title'],
-                    conference: 'Konferencia ' + element['conference']['start_year'] + ' / ' + element['conference']['end_year'],
+                    abstract: element['abstract'],
+                    keywords: element['keywords'],
+                    conference: element['conference']['title'],
                     status: element['article_status']['name'],
                     authors: element['users'],
-                    date: new Date(element['created_at']).toLocaleDateString('sk-SK', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    date: new Date(element['conference']['review_submission_deadline']).toLocaleDateString('sk-SK', { year: 'numeric', month: 'long', day: 'numeric' }),
                     reviews: element['reviews'],
                 }));
         },
@@ -161,7 +165,7 @@ export default {
         closeForm() {
             this.selectedConference = null;
         },
-        openDetails(article, source) {
+        openDetails(article, source) {console.log(article);
             this.selectedArticle = article;
             this.selectedSource = source;
 
