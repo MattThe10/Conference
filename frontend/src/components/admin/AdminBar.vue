@@ -1,7 +1,7 @@
 <template>
     <nav id="admin-navbar">
         <ul>
-            <li v-for="item in routes" :key="item.id">
+            <li v-for="item in filteredRoutes" :key="item.id">
                 <router-link :to="item.route">
                     {{ item.name }}
                 </router-link>
@@ -10,6 +10,8 @@
     </nav>
 </template>
 <script>
+import axios from "axios";
+
 export default {
     data() {
         return {
@@ -32,20 +34,44 @@ export default {
                 {
                     id: 4,
                     name: "Otázky recenzie",
-                    route: '/admin/review_features'
+                    route: '/admin/review_features',
+                    roles: ['super_admin'],
                 },
                 {
                     id: 5,
                     name: "Univerzity",
-                    route: '/admin/universities'
+                    route: '/admin/universities',
+                    roles: ['super_admin'],
                 },
                 {
                     id: 6,
                     name: "Fakulty",
-                    route: '/admin/faculties'
+                    route: '/admin/faculties',
+                    roles: ['super_admin'],
                 },
             ],
+            current_user: null,
         };
+    },
+    computed: {
+        filteredRoutes() {
+            if (!this.current_user || !this.current_user.role) {
+                return this.routes.filter(route => !route.roles);
+            }
+
+            return this.routes.filter(route => {
+                return !route.roles || route.roles.includes(this.current_user.role.key);
+            });
+        }
+    },
+    methods: {
+        async getData() {
+            const current_user_response = await axios.get("/api/current_user");
+            this.current_user = current_user_response.data;
+        },
+    },
+    mounted() {
+        this.getData();
     },
 };
 </script>

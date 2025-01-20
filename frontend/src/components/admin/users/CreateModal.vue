@@ -102,6 +102,19 @@
 
                 const roles_response = await axios.get("/api/roles");
                 this.roles = roles_response.data;
+
+                const current_user_response = await axios.get("/api/current_user");
+                this.current_user = current_user_response.data;
+
+                this.roles = this.roles.filter(role => {
+                    return role.key != 'super_admin';
+                });
+
+                if (this.current_user.role.key == 'admin') {
+                    this.roles = this.roles.filter(role => {
+                        return !['admin', 'super_admin'].includes(role.key);
+                    });
+                }
             },
             submit() {
                 axios.post("/api/users", {

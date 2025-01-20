@@ -1,7 +1,7 @@
 <template>
     <div>
         <NavBar></NavBar>
-        <div>
+        <div v-if="['student', 'review'].includes(role.key)">
             <h1 class="conference-header">Zoznam konferencií</h1>
             <div class="conference-wrapper">
                 <div class="conference-display">
@@ -32,11 +32,11 @@
                     <p> {{ user.email }}</p>
                 </div>
                 <!-- Zobrazia sa iba ak su student alebo reviewer -->
-                <div v-if="role == 'student' || role == 'reviewer'">
+                <div v-if="role.key == 'student' || role.key == 'reviewer'">
                     <p>Univerzita: </p>
                     <p>{{ university.name }}</p>
                 </div>
-                <div v-if="role == 'student' || role == 'reviewer'">
+                <div v-if="role.key == 'student' || role.key == 'reviewer'">
                     <p>Fakulta: </p>
                     <p>{{ faculty.name }}</p>
                 </div>
@@ -88,12 +88,12 @@ export default {
                 this.role = role_response.data;
 
                 const faculty_response = await axios.get(
-                    `/api/faculty/${this.user.faculties_id}`
+                    `/api/faculties/${this.user.faculties_id}`
                 );
                 this.faculty = faculty_response.data;
 
                 const university_response = await axios.get(
-                    `/api/university/${this.faculty.universities_id}`
+                    `/api/universities/${this.faculty.universities_id}`
                 );
                 this.university = university_response.data;
             } catch (error) {

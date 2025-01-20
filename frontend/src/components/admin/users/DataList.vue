@@ -113,6 +113,7 @@ export default {
     },
     data() {
         return {
+            current_user: null,
             users: [],
             isCreateModalVisible: false,
             isEditModalVisible: false,
@@ -126,6 +127,25 @@ export default {
         async getData() {
             const users_response = await axios.get("/api/users");
             this.users = users_response.data;
+
+            const current_user_response = await axios.get("/api/current_user");
+            this.current_user = current_user_response.data;
+
+            this.users = this.users.filter(user => {
+                return user.id != this.current_user.id;
+            });
+
+            if (this.current_user.role.key != 'super_admin') {
+                this.users = this.users.filter(user => {
+                    return user.role.key != 'super_admin';
+                });
+            }
+
+            if (this.current_user.role.key == 'admin') {
+                this.users = this.users.filter(user => {
+                    return ['admin', 'super_admin'].includes(user.role.key);
+                });
+            }
         },
         async searchData() {
             const users_response = await axios.get(`/api/users?search=${ this.search }`);

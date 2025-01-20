@@ -126,6 +126,7 @@ export default {
             isDetailsModalVisible: false,
             selectedData: null,
             search: null,
+            current_user: null,
         }
     },
     methods: {
@@ -137,7 +138,19 @@ export default {
             } else {
                 const articles_response = await axios.get("/api/articles");
                 this.articles = articles_response.data;
-            }console.log(this.id);
+            }
+
+            const current_user_response = await axios.get("/api/current_user");
+            this.current_user = current_user_response.data;
+
+            if (this.current_user.role.key == 'admin') {
+                this.articles = this.articles.filter(article => {
+                    return article.users.some(user => {
+                        return user.faculty.university?.id == this.current_user.faculty.university?.id;
+                    });
+                });
+            }
+            console.log(this.articles);
         },
         async searchData() {
             const articles_response = await axios.get(`/api/articles?search=${ this.search }`);
