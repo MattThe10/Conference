@@ -31,7 +31,7 @@
                     <th>
                         Miesto konania
                     </th>
-                    <th>
+                    <th v-if="current_user?.role.key == 'super_admin'">
                         Operácie
                     </th>
                 </tr>
@@ -55,7 +55,7 @@
                         <td>
                             {{ conference.university.name }}
                         </td>
-                        <td class="operations">
+                        <td class="operations" v-if="current_user?.role.key == 'super_admin'">
                             <button @click.stop="showEditModal(conference)">
                                 Upraviť
                             </button>
@@ -67,7 +67,7 @@
                 </div>
             </table>
 
-            <button type="button" class="add-button" @click="showCreateModal">
+            <button type="button" class="add-button" @click="showCreateModal" v-if="current_user?.role.key == 'super_admin'">
                 +
             </button>
         </div>
@@ -120,10 +120,14 @@ export default {
             isDetailsModalVisible: false,
             selectedData: null,
             search: null,
+            current_user: null,
         }
     },
     methods: {
         async getData() {
+            const current_user_response = await axios.get("/api/current_user");
+            this.current_user = current_user_response.data;
+            
             const conferences_response = await axios.get("/api/conferences");
             this.conferences = conferences_response.data;
         },

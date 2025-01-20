@@ -70,7 +70,7 @@ class UserController extends Controller
     public function getCurrentUser()
     {
         $user = Auth::user()
-            ->load(['faculty', 'role', 'reviews', 'articles']);
+            ->load(['faculty.university', 'role', 'reviews', 'articles']);
 
         return response()->json($user);
     }

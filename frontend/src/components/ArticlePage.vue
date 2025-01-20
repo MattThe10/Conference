@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div>
+        <div v-if="user.role?.key == 'reviewer'">
             <h2 class="articles-header">Pridelené príspevky</h2>
             <div id="articles-wrapper">
                 <div id="articles-display">

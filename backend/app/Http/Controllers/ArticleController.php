@@ -26,7 +26,7 @@ class ArticleController extends Controller
         //$articles = Article::with(['article_status', 'conference', 'documents', 'reviews', 'users'])->get();
 
 		$articles = Article::query()
-		    ->with(['conference', 'reviews', 'users', 'article_status', 'documents']);
+		    ->with(['conference', 'reviews', 'users.faculty.university', 'article_status', 'documents']);
 			
 		//Check if there a 'search' parameter in the request 
 		if ($request->has('search') && $request->search != null) {
