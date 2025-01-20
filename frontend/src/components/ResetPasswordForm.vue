@@ -1,37 +1,26 @@
 <template>
-  <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">
-    {{ errorMessage }}
-  </p>
-  <div class="wrapper">
-    <div class="wrapper-left">
-      <h1>Login</h1>
-      <p v-if="wrongCredentials" class="warning warning-par">
-        Ľutujeme, zadali ste nesprávny email alebo heslo
-      </p>
-      <form action="" @submit.prevent="handleLogin" id="basic-form">
-        <div class="wrapper-inp">
-          <label for="email-inp">Login</label>
-          <input type="email" id="email-inp" class="inp" v-model="email" required />
-        </div>
-        <div class="wrapper-inp">
-          <label for="pass-inp">Heslo</label>
-          <input type="password" id="pass-inp" class="inp" v-model="password" required />
-        </div>
-        <button type="submit" class="green-btn btn">Prihlásiť sa</button>
-      </form>
-      <p>
-        Nemáte ešte účet?
-        <router-link to="/register">Zaregistrujte sa!</router-link>
-      </p>
-      <p>
-        Alebo
-      </p>
-      <p>
-        <router-link to="/forgot_password">Zabudol si heslo?</router-link>
-      </p>
-    </div>
-    <div class="wrapper-right">
-      <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people" />
+  <div>
+    <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">
+      {{ errorMessage }}
+    </p>
+    <div class="wrapper">
+      <div class="wrapper-left">
+        <h1>Resetovať heslo</h1>
+        <form action="" @submit.prevent="handleReset" id="basic-form">
+          <div class="wrapper-inp">
+            <label for="password-inp">Heslo</label>
+            <input type="password" id="password-inp" class="inp" v-model="password" required />
+          </div>
+          <div class="wrapper-inp">
+            <label for="password-confirmation-inp">Heslo znova</label>
+            <input type="password" id="password-confirmation-inp" class="inp" v-model="password_confirmation" required />
+          </div>
+          <button type="submit" class="green-btn btn">Potvrď</button>
+        </form>
+      </div>
+      <div class="wrapper-right">
+        <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people" />
+      </div>
     </div>
   </div>
 </template>
@@ -41,29 +30,31 @@ import "@/styles/styles.css";
 import axios from "axios";
 
 export default {
+  props: ['token', 'email'],
   data() {
     return {
-      email: "",
       password: "",
-      wrongCredentials: false,
+      password_confirmation: "",
       errorMessages: [],
     };
   },
   methods: {
-    async handleLogin() {
+    async handleReset() {
       try {
-        console.log("Trying to login...");
+        console.log("Trying to reset password...");
 
-        await axios.post("/login", {
+        await axios.post("/reset-password", {
           email: this.email,
           password: this.password,
+          password_confirmation: this.password_confirmation,
+          token: this.token
         });
 
-        console.log("Successfull login");
+        console.log("Successfull reset password");
 
         this.$router.push("/home");
       } catch (error) {
-        console.log("Error while login: ", error);
+        console.log("Error while reset password: ", error);
 
         if (error.response) {
           if (error.response.data.errors) {

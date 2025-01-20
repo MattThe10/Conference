@@ -1,37 +1,25 @@
 <template>
-  <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">
-    {{ errorMessage }}
-  </p>
-  <div class="wrapper">
-    <div class="wrapper-left">
-      <h1>Login</h1>
-      <p v-if="wrongCredentials" class="warning warning-par">
-        Ľutujeme, zadali ste nesprávny email alebo heslo
-      </p>
-      <form action="" @submit.prevent="handleLogin" id="basic-form">
-        <div class="wrapper-inp">
-          <label for="email-inp">Login</label>
-          <input type="email" id="email-inp" class="inp" v-model="email" required />
-        </div>
-        <div class="wrapper-inp">
-          <label for="pass-inp">Heslo</label>
-          <input type="password" id="pass-inp" class="inp" v-model="password" required />
-        </div>
-        <button type="submit" class="green-btn btn">Prihlásiť sa</button>
-      </form>
-      <p>
-        Nemáte ešte účet?
-        <router-link to="/register">Zaregistrujte sa!</router-link>
-      </p>
-      <p>
-        Alebo
-      </p>
-      <p>
-        <router-link to="/forgot_password">Zabudol si heslo?</router-link>
-      </p>
-    </div>
-    <div class="wrapper-right">
-      <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people" />
+  <div>
+    <p v-for="(errorMessage, index) in errorMessages" :key="index" class="warning warning-par">
+      {{ errorMessage }}
+    </p>
+    <div class="wrapper">
+      <div class="wrapper-left">
+        <h1>Zabudnuté heslo</h1>
+        <p v-if="wrongCredentials" class="warning warning-par">
+          Ľutujeme, zadali ste nesprávny email alebo heslo
+        </p>
+        <form action="" @submit.prevent="handleSend" id="basic-form">
+          <div class="wrapper-inp">
+            <label for="email-inp">Email</label>
+            <input type="email" id="email-inp" class="inp" v-model="email" required />
+          </div>
+          <button type="submit" class="green-btn btn">Potvrď</button>
+        </form>
+      </div>
+      <div class="wrapper-right">
+        <img src="@/assets/office-2.jpg" class="image" alt="Conference desk with people" />
+      </div>
     </div>
   </div>
 </template>
@@ -44,26 +32,24 @@ export default {
   data() {
     return {
       email: "",
-      password: "",
       wrongCredentials: false,
       errorMessages: [],
     };
   },
   methods: {
-    async handleLogin() {
+    async handleSend() {
       try {
-        console.log("Trying to login...");
+        console.log("Trying to send email...");
 
-        await axios.post("/login", {
-          email: this.email,
-          password: this.password,
+        await axios.post("/forgot-password", {
+          email: this.email
         });
 
-        console.log("Successfull login");
+        console.log("Successfull send email");
 
-        this.$router.push("/home");
+        this.$router.push("/login");
       } catch (error) {
-        console.log("Error while login: ", error);
+        console.log("Error while send email: ", error);
 
         if (error.response) {
           if (error.response.data.errors) {
