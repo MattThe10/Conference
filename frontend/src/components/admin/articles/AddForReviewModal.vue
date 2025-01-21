@@ -59,11 +59,16 @@
             },
             async submit() {
                 try {
-                    const user_response = await axios.get(`/api/users?search=${this.email}`);
-                    const user = user_response.data;
+                    const users_response = await axios.get(`/api/users?search=${this.email}`);
+                    const user = users_response.data[0];
                     
-                    if (user.length == 0) {
+                    if (user == null) {
                         alert('Používateľ s týmto e-mailom neexistuje.');
+                        return;
+                    }
+                    
+                    if (user.role.key !== 'reviewer') {
+                        alert('Tento používateľ nie je recenzent.');
                         return;
                     }
 
@@ -72,17 +77,28 @@
                         return;
                     }
 
+                    const reviews_response = await axios.get('/api/reviews');
+                    let reviews = reviews_response.data;
+
+                    const hasReview = reviews.some(review => {
+                        return review.users_id == user.id && this.selectedArticles.includes(review.articles_id);
+                    });
+
+                    if (hasReview) {
+                        alert('Medzi vybranými príspevkami existujú už pridelené tomuto recenzentovi.');
+                        return;
+                    }
+
                     this.selectedArticles.forEach(selectedArticle => {
                         axios.post("/api/reviews", {
-                            user_id: user[0].id,
+                            user_id: user.id,
                             article_id: selectedArticle,
                             article_for_review: true,
-                        })
-                        .then(() => {
-                            alert('Príspevky boli priradené recenzentovi.');
-                            location.reload();
                         });
                     });
+
+                    alert('Príspevky boli priradené recenzentovi.');
+                    location.reload();
                 } catch (error) {
                     console.error('Chyba pri priradení príspevkov: ', error);
                     alert('Nepodarilo sa priradiť príspevok. Skontrolujte e-mail.');

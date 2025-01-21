@@ -34,8 +34,8 @@
                 @change="onFileChange($event, 'file_word');" accept=".doc, .docx" @input="clearError('file_word')" required>
             <p v-if="errors.file_word" class="error">{{ errors.file_word[0] }}</p>
 
-            <button type="button" class="btn" @click="submitArticle" id="btn-submit">Odoslať</button>
-            <button type="button" class="btn" @click="saveArticle" id="btn-submit">Uložiť</button>
+            <button type="button" class="btn btn-submit" :disabled="!isFormValid" @click="submitArticle">Odoslať</button>
+            <button type="button" class="btn btn-submit" :disabled="!isFormValid" @click="saveArticle">Uložiť</button>
         </form>
     </div>
 
@@ -65,18 +65,25 @@ export default {
         conference: Object,
     },
     methods: {
+        // Add author to list
         async addAuthor() {
             try {
-                const user_response = await axios.get(`/api/users?search=${this.new_author_email}`);
-                const users = user_response.data;
-                if (users.length == 0) {
+                const users_response = await axios.get(`/api/users?search=${this.new_author_email}`);
+                const user = users_response.data[0];
+
+                if (user == null) {
                     alert('Používateľ s týmto e-mailom neexistuje.');
                     return;
                 }
 
-                if (!this.user_ids.includes(users[0].id)) {
-                    this.user_ids.push(users[0].id);
-                    alert(`Používateľ ${users[0].name} bol pridaný.`);
+                if (!['reviewer', 'student'].includes(user.role.key) || user.id == this.user.id) {
+                    alert('Toho používateľa nie je možné pridať.');
+                    return;   
+                }
+
+                if (!this.user_ids.includes(user.id)) {
+                    this.user_ids.push(user.id);
+                    alert(`Používateľ ${user.name} bol pridaný.`);
                 } else {
                     alert(`Tento používateľ je už pridaný.`);
                 }
@@ -87,17 +94,28 @@ export default {
                 alert('Nepodarilo sa pridať používateľa. Skontrolujte e-mail.');
             }
         },
+
+        // Remove author from list
         removeAuthor(user_id) {
             this.user_ids = this.user_ids.filter(id => id !== user_id);
         },
+
+        // Get user's name
         getUserName(user_id) {
             const user = this.users.find(user => user.id === user_id);
             return user ? user.name + ' ' + user.surname : 'Neznámy užívateľ';
         },
-        async getUsers() {
-            const user_response = await axios.get('/api/users');
-            this.users = user_response.data;
+
+        async getData() {
+            // Get current user
+            const user_response = await axios.get("/api/current_user");
+            this.user = user_response.data;
+
+            // Get all users
+            const users_response = await axios.get('/api/users');
+            this.users = users_response.data;
         },
+
         //Tu je submit pre form -------PREROBIT PRE BACKEND--------
         async submitArticle() {
             await this.updateArticle('submit');
@@ -107,6 +125,7 @@ export default {
                 author: this.author
             });
         },
+
         async saveArticle() {
             await this.updateArticle('save');
 
@@ -115,6 +134,7 @@ export default {
                 author: this.author
             });
         },
+
         // Handle file input change and store the selected file
         onFileChange(event, file_type) {
             const file = event.target.files[0];
@@ -122,13 +142,10 @@ export default {
                 this[file_type] = file;
             }
         },
+
         // Update article
         async updateArticle(type) {
             try {
-                // Get current user data
-                const user_response = await axios.get("/api/current_user");
-                this.user = user_response.data;
-
                 this.articles = this.user.articles;
 
                 if (!this.user_ids.includes(this.user.id)) {
@@ -196,6 +213,7 @@ export default {
                 }
             }
         },
+
         clearError(field) {
             if (this.errors[field]) {
                 delete this.errors[field];
@@ -203,8 +221,19 @@ export default {
         },
     },
     mounted() {
-        this.getUsers();
-    }
+        this.getData();
+    },
+    computed: {
+        isFormValid() {
+            return (
+                this.title !== '' &&
+                this.abstract !== '' &&
+                this.keywords !== '' &&
+                (this.files_uploaded || this.file_pdf !== null) &&
+                (this.files_uploaded || this.file_word !== null)
+            );
+        }
+    },
 };
 </script>
 
@@ -247,9 +276,14 @@ export default {
     cursor: pointer;
 }
 
-#btn-submit {
+.btn-submit {
     padding: 5px;
     font-size: 1.5rem;
+}
+
+.btn-submit:disabled {
+    opacity: .5;
+    pointer-events: none;
 }
 
 .error {

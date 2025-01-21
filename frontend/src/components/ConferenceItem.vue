@@ -1,10 +1,9 @@
 <template>
     <div class="conference-item">
         <h2>{{ conference.name }}</h2>
-        <p>Dátum konferencie {{ conference.conference_date_sk }}</p>
+        <!-- <p>Dátum konferencie {{ conference.conference_date_sk }}</p> -->
         <p>Deadline {{ conference.submission_deadline_sk }}</p>
-        <button @click="$emit('openForm', conference)" class="conference-create-btn btn"
-            :class="{ disabled: isDisabled(conference) }">+</button>
+        <button @click="$emit('openDetails', conference)" class="conference-create-btn btn">+</button>
     </div>
 </template>
 
@@ -21,14 +20,6 @@ export default {
         conference: Object
     },
     methods: {
-        isDisabled(conference) {
-            const deadline_date = new Date(conference['submission_deadline']);
-            const current_date = new Date();
-
-            if (current_date > deadline_date) return true;
-
-            return false;
-        },
         async getArticles() {
             try {
                 console.log("Loading article data...");
