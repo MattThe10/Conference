@@ -7,7 +7,7 @@
         <p>{{ article.abstract ?? 'Prázdne' }}</p>
 
         <h5>Kľúčové slová</h5>
-        <p>{{ article.keywords ??'Prázdne' }}</p>
+        <p>{{ article.keywords ?? 'Prázdne' }}</p>
 
         <h5>Autori</h5>
         <p v-for="(author, index) in article.authors" :key="index">
@@ -27,15 +27,16 @@
         <button @click="downloadFile()" class="btn-add document-download-btn btn"
             :class="{ disabled: download_disabled }">Stiahnuť</button>
 
-        <button v-if="source == 'articlesForReview'" @click="$emit('openReviewForm')" class="btn-add article-edit-btn btn" :class="{ disabled: review_disabled }">
+        <button v-if="source == 'articlesForReview'" @click="$emit('openReviewForm')"
+            class="btn-add article-edit-btn btn" :class="{ disabled: review_disabled }">
             Recenzovať
         </button>
 
         <button v-if="source == 'articles'" @click="$emit('openArticleEditForm', article)"
             class="btn-add article-edit-btn btn" :class="{ disabled: edit_disabled }">Upraviť</button>
 
-        <button v-if="source == 'articles'" @click="deleteArticle()"
-            class="btn-delete article-edit-btn btn" :class="{ disabled: delete_disabled }">Odstrániť</button>
+        <button v-if="source == 'articles'" @click="deleteArticle()" class="btn-delete article-edit-btn btn"
+            :class="{ disabled: delete_disabled }">Odstrániť</button>
 
         <p v-if="source == 'articles'">Termín na odovzdanie príspevku: {{ article.date }}</p>
         <p v-if="source == 'articlesForReview'">Termín na vyplnenie recenzie: {{ article.date }}</p>
@@ -91,7 +92,7 @@ export default {
 
             if (this.source == 'articles') {
                 const deadline_date = new Date(this.article_data.conference['submission_deadline']);
-                this.edit_disabled = current_date > deadline_date ||!['draft', 'returned'].includes(this.article_data.article_status.key);
+                this.edit_disabled = current_date > deadline_date || !['draft', 'returned'].includes(this.article_data.article_status.key);
 
                 this.delete_disabled = !['draft', 'returned'].includes(this.article_data.article_status.key);
 
@@ -141,18 +142,18 @@ export default {
         },
         deleteArticle() {
             axios.delete(`/api/articles/${this.article.id}`)
-            .then(() => {
-                location.reload();
-            })
-            .catch((error) => {
-                console.error("Chyba pri odstraňovaní príspevku: ", error);
+                .then(() => {
+                    location.reload();
+                })
+                .catch((error) => {
+                    console.error("Chyba pri odstraňovaní príspevku: ", error);
 
-                if (this.article.reviews.length > 0) {
-                    alert("Tento príspevok je už recenzovaný.");
-                } else {
-                    alert("Nepodarilo sa odstrániť príspevok.");
-                }
-            });
+                    if (this.article.reviews.length > 0) {
+                        alert("Tento príspevok je už recenzovaný.");
+                    } else {
+                        alert("Nepodarilo sa odstrániť príspevok.");
+                    }
+                });
         },
     },
     mounted() {

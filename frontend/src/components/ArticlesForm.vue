@@ -251,7 +251,7 @@ export default {
 }
 
 .modal {
-    width: 26vw;
+    width: 20vw;
 }
 
 .btn-submit {

@@ -17,7 +17,8 @@
                 <div v-if="selectedConferenceDetails" class="modal-backdrop conference-button" @click="closeDetails">
                     <div class="modal-content" @click.stop>
                         <button class="close-btn" @click="closeDetails">✖</button>
-                        <ConferenceData :conference="selectedConferenceDetails" @openForm="openForm" @close="closeDetails" />
+                        <ConferenceData :conference="selectedConferenceDetails" @openForm="openForm"
+                            @close="closeDetails" />
                     </div>
                 </div>
             </div>
