@@ -145,7 +145,11 @@ export default {
                     reviews: element['reviews'],
                 }));
 
-            this.articlesForRevew = articles
+            this.articlesForRevew = articles.filter(article => {
+                return new Date > new Date(article.conference.review_assignment_deadline);
+            });
+
+            this.articlesForRevew = this.articlesForRevew
                 .filter(article => article['reviews'].some(review => review['users_id'] == this.user['id']))
                 .map(element => ({
                     id: element['id'],

@@ -62,18 +62,25 @@ export default {
         }
     },
     methods: {
+        // Add author to list
         async addAuthor() {
             try {
-                const user_response = await axios.get(`/api/users?search=${this.new_author_email}`);
-                const users = user_response.data;
-                if (users.length == 0) {
+                const users_response = await axios.get(`/api/users?search=${this.new_author_email}`);
+                const user = users_response.data[0];
+
+                if (user.length == 0) {
                     alert('Používateľ s týmto e-mailom neexistuje.');
                     return;
                 }
 
-                if (!this.user_ids.includes(users[0].id)) {
-                    this.user_ids.push(users[0].id);
-                    alert(`Používateľ ${users[0].name} bol pridaný.`);
+                if (!['reviewer', 'student'].includes(user.role.key) || user.id == this.user.id) {
+                    alert('Toho používateľa nie je možné pridať.');
+                    return;   
+                }
+
+                if (!this.user_ids.includes(user.id)) {
+                    this.user_ids.push(user.id);
+                    alert(`Používateľ ${user.name} bol pridaný.`);
                 } else {
                     alert(`Tento používateľ je už pridaný.`);
                 }
@@ -84,28 +91,45 @@ export default {
                 alert('Nepodarilo sa pridať používateľa. Skontrolujte e-mail.');
             }
         },
+
+        // Remove author from list
         removeAuthor(user_id) {
             this.user_ids = this.user_ids.filter(id => id !== user_id);
         },
+
+        // Get user's name
         getUserName(user_id) {
             const user = this.users.find(user => user.id === user_id);
             return user ? user.name + ' ' + user.surname : 'Neznámy užívateľ';
         },
-        async getUsers() {
-            const user_response = await axios.get('/api/users');
-            this.users = user_response.data;
-        },
+
         async setUsers() {
+            const current_user_response = await axios.get("/api/current_user");
+            const current_user = current_user_response.data;
+
             this.article.authors.forEach(user => {
-                this.user_ids.push(user.id)
+                if (user.id != current_user.id) {
+                    this.user_ids.push(user.id)
+                }
             });
         },
+
         async getData() {
+            // Get current user
+            const user_response = await axios.get("/api/current_user");
+            this.user = user_response.data;
+
+            // Get all users
+            const users_response = await axios.get('/api/users');
+            this.users = users_response.data;
+
+            // Get article
             const article_response = await axios.get(`/api/articles/${this.article.id}`);
             const article_data = article_response.data;
 
             if (article_data.documents.length >= 2) this.files_uploaded = true;
         },
+
         submitArticle() {
             this.updateArticle('submit');
 
@@ -114,6 +138,7 @@ export default {
                 // author: this.author
             });
         },
+
         saveArticle() {
             this.updateArticle('save');
 
@@ -122,6 +147,7 @@ export default {
                 // author: this.author
             });
         },
+
         // Handle file input change and store the selected file
         onFileChange(event, file_type) {
             const file = event.target.files[0];
@@ -129,13 +155,10 @@ export default {
                 this[file_type] = file;
             }
         },
+
         // Update article
         async updateArticle(type) {
             try {
-                // Get current user data
-                const user_response = await axios.get("/api/current_user");
-                this.user = user_response.data;
-
                 this.articles = this.user.articles;
 
                 if (!this.user_ids.includes(this.user.id)) {
@@ -179,13 +202,11 @@ export default {
                 form_data.append("article_status_id", status.id);
 
                 // Request to update article
-                await axios.post(`/api/articles/${this.articles[this.articles.length - 1].id}`, form_data, {
+                await axios.post(`/api/articles/${article_data.id}`, form_data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-
-                this.$emit('close');
 
                 // Reload page after successful update
                 window.location.reload();
@@ -205,6 +226,7 @@ export default {
                 }
             }
         },
+
         clearError(field) {
             if (this.errors[field]) {
                 delete this.errors[field];
@@ -212,9 +234,8 @@ export default {
         },
     },
     mounted() {
-        this.getUsers();
-        this.setUsers();
         this.getData();
+        this.setUsers();
     },
     computed: {
         isFormValid() {
@@ -223,8 +244,7 @@ export default {
                 this.abstract !== '' &&
                 this.keywords !== '' &&
                 (this.files_uploaded || this.file_pdf !== null) &&
-                (this.files_uploaded || this.file_word !== null) &&
-                this.user_ids.length >= 1
+                (this.files_uploaded || this.file_word !== null)
             );
         }
     },

@@ -6,12 +6,18 @@
             <div class="conference-wrapper">
                 <div class="conference-display">
                     <ConferenceItem v-for="conference in conferences" :key="conference.id" class="conference-item"
-                        :conference="conference" @openForm="openForm"></ConferenceItem>
+                        :conference="conference" @openForm="openForm" @openDetails="openDetails"></ConferenceItem>
                 </div>
-                <div v-if="selectedConference" class="modal-backdrop conference-button" @click="closeForm">
-                    <div @click.stop>
-                        <button class="btn-close" @click="closeForm">✖</button>
-                        <ArticlesForm :conference="selectedConference" @close="closeForm" />
+                <div v-if="selectedConferenceForm" class="modal-backdrop conference-button" @click="closeForm">
+                    <div class="modal-content" @click.stop>
+                        <button class="close-btn" @click="closeForm">✖</button>
+                        <ArticlesForm :conference="selectedConferenceForm" @close="closeForm" />
+                    </div>
+                </div>
+                <div v-if="selectedConferenceDetails" class="modal-backdrop conference-button" @click="closeDetails">
+                    <div class="modal-content" @click.stop>
+                        <button class="close-btn" @click="closeDetails">✖</button>
+                        <ConferenceData :conference="selectedConferenceDetails" @openForm="openForm" @close="closeDetails" />
                     </div>
                 </div>
             </div>
@@ -58,12 +64,14 @@ import axios from "axios";
 import NavBar from "./NavBar.vue";
 import ConferenceItem from '@/components/ConferenceItem.vue'
 import ArticlesForm from '@/components/ArticlesForm.vue'
+import ConferenceData from '@/components/ConferenceData.vue'
 
 export default {
     components: {
         NavBar,
         ConferenceItem,
-        ArticlesForm
+        ArticlesForm,
+        ConferenceData
     },
     data() {
         return {
@@ -76,7 +84,8 @@ export default {
                 { id: 1, name: 'Konferencia IT', date: '2025-03-10' },
                 { id: 2, name: 'AI Konferenia', date: '2025-04-15' },
             ],
-            selectedConference: null,
+            selectedConferenceForm: null,
+            selectedConferenceDetails: null,
         };
     },
     methods: {
@@ -166,15 +175,20 @@ export default {
                 }
             }
         },
+        openDetails(conference) {
+            this.selectedConferenceDetails = conference;
+        },
+        closeDetails() {
+            this.selectedConferenceDetails = null;
+        },
         openForm(conference) {
-            // Sem vložiť kód pre kontrolu či sa chce user naozaj zúčastniť konferencie
-
             this.storeArticle(conference.id);
 
-            this.selectedConference = conference;
+            this.selectedConferenceForm = conference;
+            this.selectedConferenceDetails = null;
         },
         closeForm() {
-            this.selectedConference = null;
+            this.selectedConferenceForm = null;
             window.location.reload();
         },
     },

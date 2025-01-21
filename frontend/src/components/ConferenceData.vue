@@ -1,19 +1,47 @@
 <template>
     <div>
-        <h2>Zoznam konferencií</h2>
+        <h2>{{ conference.name }}</h2>
         <div class="conference-wrapper">
             <div class="modal-example">
-                <ul>
-                    <li v-for="(item, index) in conferences" :key="index">
-                        <span>{{ item.name }}</span>
-                        <button @click="openModal(index)">Detaily</button>
-                    </li>
-                </ul>
+                <div>
+                    <h3>Abstrakt</h3>
+                    <p>
+                        {{ conference.abstract }}
+                    </p>
+                </div>
+                <div>
+                    <h3>Dátum konferencie</h3>
+                    <p>
+                        {{
+                            new Date(conference.conference_date).toLocaleDateString('sk-SK', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })
+                        }}
+                    </p>
+                </div>
+                <div>
+                    <h3>Deadline</h3>
+                    <p>
+                        {{
+                            new Date(conference.submission_deadline).toLocaleDateString('sk-SK', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })
+                        }}
+                    </p>
+                </div>
+
+                <button @click="$emit('openForm', conference)" class="btn-add article-edit-btn btn" :class="{ disabled: isDisabled(conference) }">
+                    +
+                </button>
 
                 <!-- Modal -->
-                <div v-if="selectedItem !== null" class="modal-overlay" @click="closeModal">
+                <!-- <div v-if="selectedItem !== null" class="modal-overlay" @click="closeModal">
                     <div class="modal-content" @click.stop>
-                        <!-- <h2>{{ conferences[selectedItem].name }}</h2>
+                        <h2>{{ conferences[selectedItem].name }}</h2>
                         <h3 for="place">Miesto</h3>
                         <p id="place">{{ conferences[selectedItem].place }}</p>
                         <h3 for="street">Ulica</h3>
@@ -26,7 +54,7 @@
                         <p id="date">{{ conferences[selectedItem].date }}</p>
                         <h3 for="misc">Poznámky</h3>
                         <p id="misc">{{ conferences[selectedItem].misc }}</p>
-                        <button @click="closeModal">Close</button> -->
+                        <button @click="closeModal">Close</button>
                         <h2>{{ conferences[selectedItem].name }}</h2>
                         <h3>Miesto</h3>
                         <p>{{ conferences[selectedItem].place }}</p>
@@ -40,7 +68,7 @@
 
                         <router-link to="/" :class="{ disabled: isDisabled(conferences[selectedItem]) }">Nahrať príspevok</router-link>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -78,6 +106,9 @@ export default {
             articles: [],
         }
     },
+    props: {
+        conference: Object,
+    },
     methods: {
         openModal(index) {
             this.selectedItem = index; // Set the selected item index
@@ -113,12 +144,6 @@ export default {
             const current_date = new Date();
 
             if (current_date > deadline_date) return true;
-
-            const article_exists = this.articles.some(element => 
-                element['conference']['id'] == conference['id']
-            );
-
-            if (article_exists) return true;
 
             return false;
         },
@@ -176,5 +201,12 @@ export default {
 .disabled {
     opacity: 0.5;
     pointer-events: none;
+}
+
+.btn-add {
+    padding: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
 }
 </style>

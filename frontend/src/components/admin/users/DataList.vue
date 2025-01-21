@@ -143,7 +143,7 @@ export default {
 
             if (this.current_user.role.key == 'admin') {
                 this.users = this.users.filter(user => {
-                    return ['admin', 'super_admin'].includes(user.role.key);
+                    return !['admin', 'super_admin'].includes(user.role.key);
                 });
             }
         },
