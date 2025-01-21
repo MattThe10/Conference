@@ -1,7 +1,7 @@
 <template>
     <div>
         <NavBar></NavBar>
-        <div v-if="['student', 'review'].includes(role.key)">
+        <div v-if="['student', 'reviewer'].includes(role.key)">
             <h1 class="conference-header">Zoznam konferencií</h1>
             <div class="conference-wrapper">
                 <div class="conference-display">
@@ -17,7 +17,8 @@
                 <div v-if="selectedConferenceDetails" class="modal-backdrop conference-button" @click="closeDetails">
                     <div class="modal-content" @click.stop>
                         <button class="close-btn" @click="closeDetails">✖</button>
-                        <ConferenceData :conference="selectedConferenceDetails" @openForm="openForm" @close="closeDetails" />
+                        <ConferenceData :conference="selectedConferenceDetails" @openForm="openForm"
+                            @close="closeDetails" />
                     </div>
                 </div>
             </div>

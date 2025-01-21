@@ -5,12 +5,15 @@
             <h2 class="articles-header">Moje príspevky</h2>
             <div id="articles-wrapper">
                 <div id="articles-display">
-                    <ArticleItem v-for="article in articles" :key="article.id" :article="article" :source="'articles'" @openDetails="openDetails" />
+                    <ArticleItem v-for="article in articles" :key="article.id" :article="article" :source="'articles'"
+                        @openDetails="openDetails" />
                     <!-- Modal for Article Details -->
                     <div v-if="selectedArticle" class="modal-backdrop" @click="closeDetails">
                         <div class="modal-content" @click.stop>
                             <button class="close-btn" @click="closeDetails">✖</button>
-                            <ArticleDetails :article="selectedArticle" :source="selectedSource" @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm" @openReviewDetails="openReviewDetails" />
+                            <ArticleDetails :article="selectedArticle" :source="selectedSource"
+                                @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm"
+                                @openReviewDetails="openReviewDetails" />
                         </div>
                     </div>
 
@@ -23,10 +26,12 @@
                     </div>
 
                     <!-- Modal for Article Edit Form -->
-                    <div v-if="showArticleEditForm" class="modal-backdrop" @click="closeArticleEditForm(selectedArticle)">
+                    <div v-if="showArticleEditForm" class="modal-backdrop"
+                        @click="closeArticleEditForm(selectedArticle)">
                         <div class="modal-content" @click.stop>
                             <button class="close-btn" @click="closeArticleEditForm(selectedArticle)">✖</button>
-                            <ArticleEditForm :article="selectedArticle" @close="closeArticleEditForm(selectedArticle)" />
+                            <ArticleEditForm :article="selectedArticle"
+                                @close="closeArticleEditForm(selectedArticle)" />
                         </div>
                     </div>
 
@@ -45,12 +50,15 @@
             <h2 class="articles-header">Pridelené príspevky</h2>
             <div id="articles-wrapper">
                 <div id="articles-display">
-                    <ArticleItem v-for="article in articlesForRevew" :key="article.id" :article="article" :source="'articlesForReview'" @openDetails="openDetails" />
+                    <ArticleItem v-for="article in articlesForRevew" :key="article.id" :article="article"
+                        :source="'articlesForReview'" @openDetails="openDetails" />
                     <!-- Modal for Article Details -->
                     <div v-if="selectedArticle" class="modal-backdrop" @click="closeDetails">
                         <div class="modal-content" @click.stop>
                             <button class="close-btn" @click="closeDetails">✖</button>
-                            <ArticleDetails :article="selectedArticle" :source="selectedSource" @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm" @openReviewDetails="openReviewDetails" />
+                            <ArticleDetails :article="selectedArticle" :source="selectedSource"
+                                @openReviewForm="openReviewForm" @openArticleEditForm="openArticleEditForm"
+                                @openReviewDetails="openReviewDetails" />
                         </div>
                     </div>
 
@@ -63,10 +71,12 @@
                     </div>
 
                     <!-- Modal for Article Edit Form -->
-                    <div v-if="showArticleEditForm" class="modal-backdrop" @click="closeArticleEditForm(selectedArticle)">
+                    <div v-if="showArticleEditForm" class="modal-backdrop"
+                        @click="closeArticleEditForm(selectedArticle)">
                         <div class="modal-content" @click.stop>
                             <button class="close-btn" @click="closeArticleEditForm(selectedArticle)">✖</button>
-                            <ArticleEditForm :article="selectedArticle" @close="closeArticleEditForm(selectedArticle)" />
+                            <ArticleEditForm :article="selectedArticle"
+                                @close="closeArticleEditForm(selectedArticle)" />
                         </div>
                     </div>
 
@@ -169,7 +179,8 @@ export default {
         closeForm() {
             this.selectedConference = null;
         },
-        openDetails(article, source) {console.log(article);
+        openDetails(article, source) {
+            console.log(article);
             this.selectedArticle = article;
             this.selectedSource = source;
 
