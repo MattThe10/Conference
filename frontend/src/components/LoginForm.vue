@@ -10,24 +10,21 @@
       </p>
       <form action="" @submit.prevent="handleLogin" id="basic-form">
         <div class="wrapper-inp">
-          <label for="email-inp">Login</label>
+          <label for="email-inp">Email</label>
           <input type="email" id="email-inp" class="inp" v-model="email" required />
         </div>
         <div class="wrapper-inp">
           <label for="pass-inp">Heslo</label>
           <input type="password" id="pass-inp" class="inp" v-model="password" required />
+          <p class="p-forgot-password">
+            <router-link to="/forgot_password">Zabudol si heslo?</router-link>
+          </p>
         </div>
         <button type="submit" class="green-btn btn">Prihlásiť sa</button>
       </form>
       <p>
         Nemáte ešte účet?
         <router-link to="/register">Zaregistrujte sa!</router-link>
-      </p>
-      <p>
-        Alebo
-      </p>
-      <p>
-        <router-link to="/forgot_password">Zabudol si heslo?</router-link>
       </p>
     </div>
     <div class="wrapper-right">
@@ -159,5 +156,9 @@ h1 {
 
 p {
   font-size: 0.9rem;
+}
+
+.p-forgot-password {
+  font-size: 0.75rem;
 }
 </style>

@@ -5,7 +5,7 @@
     </p>
     <div class="wrapper">
       <div class="wrapper-left">
-        <h1>Zabudnuté heslo</h1>
+        <h1 class="h1-title">Zabudnuté heslo</h1>
         <p v-if="wrongCredentials" class="warning warning-par">
           Ľutujeme, zadali ste nesprávny email alebo heslo
         </p>
@@ -13,8 +13,12 @@
           <div class="wrapper-inp">
             <label for="email-inp">Email</label>
             <input type="email" id="email-inp" class="inp" v-model="email" required />
+            <p class="p-forgot-password">
+              <router-link to="/login">Vieš heslo?</router-link>
+            </p>
           </div>
-          <button type="submit" class="green-btn btn">Potvrď</button>
+          <button type="submit" class="green-btn btn">Potvrdiť
+          </button>
         </form>
       </div>
       <div class="wrapper-right">
@@ -104,20 +108,6 @@ h1 {
   font-size: 2.5rem;
 }
 
-#login-form {
-  margin-top: 25px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 5px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
 .wrapper-inp {
   text-align: start;
   display: flex;
@@ -145,5 +135,9 @@ h1 {
 
 p {
   font-size: 0.9rem;
+}
+
+.h1-title {
+  margin-bottom: 2rem;
 }
 </style>

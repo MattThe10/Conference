@@ -3,27 +3,29 @@
         <h2>{{ conference.name }}</h2>
         <form id="article-form">
             <label for="title">Názov</label>
-            <input type="text" v-model="title" id="title" @input="clearError('title')" required />
+            <input type="text" class="inp" v-model="title" id="title" @input="clearError('title')" required />
             <p v-if="errors.title" class="error">{{ errors.title[0] }}</p>
 
             <label for="email">Autor</label>
             <div>
-                <input type="email" v-model="new_author_email" placeholder="Zadajte e-mail" required />
-                <button type="button" class="btn" @click="addAuthor">Pridať</button>
+                <input type="email" class="inp inp-author" v-model="new_author_email" placeholder="Zadajte e-mail"
+                    required />
+                <button type="button" class="btn btn-add" @click="addAuthor">Pridať</button>
             </div>
             <ul>
-                <li v-for="id in user_ids" :key="id">
+                <li v-for="id in user_ids" :key="id" class="li-author">
                     {{ getUserName(id) }}
-                    <button type="button" @click="removeAuthor(id)">Odstrániť</button>
+                    <button type="button" class="btn-remove-author" @click="removeAuthor(id)">Odstrániť</button>
                 </li>
             </ul>
 
             <label for="abstract">Abstrakt</label>
-            <textarea id="abstract" cols="30" rows="3" v-model="abstract" @input="clearError('abstract')"></textarea>
+            <textarea class="inp" style="height: 4rem;" id="abstract" cols="30" rows="3" v-model="abstract"
+                @input="clearError('abstract')"></textarea>
             <p v-if="errors.abstract" class="error">{{ errors.abstract[0] }}</p>
 
             <label for="keywords">Kľúčové slová</label>
-            <input type="text" id="keywords" v-model="keywords" @input="clearError('keywords')">
+            <input type="text" class="inp" id="keywords" v-model="keywords" @input="clearError('keywords')">
             <p v-if="errors.keywords" class="error">{{ errors.keywords[0] }}</p>
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
@@ -31,10 +33,9 @@
             <p v-if="errors.file_pdf" class="error">{{ errors.file_pdf[0] }}</p>
 
             <input type="file" style="margin-top: 1rem; margin-bottom: 1rem;"
-                @change="onFileChange($event, 'file_word');" accept=".doc, .docx" @input="clearError('file_word')" required>
+                @change="onFileChange($event, 'file_word');" accept=".doc, .docx" @input="clearError('file_word')"
+                required>
             <p v-if="errors.file_word" class="error">{{ errors.file_word[0] }}</p>
-
-            <button type="button" class="btn" @click="submitArticle" id="btn-submit">Odoslať</button>
             <button type="button" class="btn" @click="saveArticle" id="btn-submit">Uložiť</button>
         </form>
     </div>
@@ -97,15 +98,6 @@ export default {
         async getUsers() {
             const user_response = await axios.get('/api/users');
             this.users = user_response.data;
-        },
-        //Tu je submit pre form -------PREROBIT PRE BACKEND--------
-        async submitArticle() {
-            await this.updateArticle('submit');
-
-            console.log(`Article for ${this.conference.name}:`, {
-                title: this.title,
-                author: this.author
-            });
         },
         async saveArticle() {
             await this.updateArticle('save');
@@ -213,46 +205,52 @@ export default {
     display: flex;
     flex-direction: column;
     text-align: left;
-    gap: 0.2rem;
     font-size: 1.2rem;
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    gap: 0.2rem;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    position: relative;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
+.modal {
+    width: 26vw;
 }
 
 #btn-submit {
     padding: 5px;
     font-size: 1.5rem;
+    width: 10rem;
+    align-self: center;
 }
 
 .error {
     color: #dc3545;
+}
+
+.li-author {
+    list-style: none;
+    background-color: #e88e2f;
+    color: #fff;
+    width: 12rem;
+    padding: 4px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.btn-remove-author {
+    border-radius: 8px;
+    border: none;
+    padding: 4px;
+    background-color: #41917b;
+    color: #fff;
+}
+
+.btn-add {
+    padding: 4px;
+    font-size: 1.2rem;
+    margin-left: 2px;
 }
 </style>

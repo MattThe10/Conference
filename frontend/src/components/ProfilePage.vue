@@ -245,10 +245,6 @@ export default {
 
 .btn {
     padding: 10px;
-    font-size: 2rem;
-    background-color: #52b69a;
-    color: #fefae0;
-    border: none;
     border-radius: 10px;
     margin-bottom: 32px;
 }

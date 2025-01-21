@@ -5,19 +5,19 @@
             <form action="" @submit.prevent="handleRegister" id="basic-form">
                 <div class="wrapper-inp">
                     <label for="name-inp">Meno</label>
-                    <input type="text" id="name-inp" v-model="name" required>
+                    <input type="text" id="name-inp" v-model="name" required class="inp">
                 </div>
                 <div class="wrapper-inp">
                     <label for="surname-inp">Priezvisko</label>
-                    <input type="text" id="surname-inp" v-model="surname" required>
+                    <input type="text" id="surname-inp" v-model="surname" required class="inp">
                 </div>
                 <div class="wrapper-inp">
                     <label for="email-inp">Email</label>
-                    <input type="email" id="email-inp" v-model="email" required>
+                    <input type="email" id="email-inp" v-model="email" required class="inp">
                 </div>
                 <div class="wrapper-inp">
                     <label for="university-faculty-inp">Univerzita a Fakulta</label>
-                    <select id="university-faculty-inp" v-model="faculty_id" required>
+                    <select id="university-faculty-inp" v-model="faculty_id" required class="inp">
                         <optgroup v-for="university in universities" :key="university.id" :label="university.name">
                             <option v-for="faculty in university.faculties" :key="faculty.id" :value="faculty.id">
                                 {{ faculty.name }}
@@ -27,11 +27,12 @@
                 </div>
                 <div class="wrapper-inp">
                     <label for="pass-inp">Heslo*</label>
-                    <input type="password" id="pass-inp" v-model="password" required>
+                    <input type="password" id="pass-inp" v-model="password" required class="inp">
                 </div>
                 <div class="wrapper-inp">
                     <label for="pass-confirmation-inp">Heslo (znovu)*</label>
-                    <input type="password" id="pass-confirmation-inp" v-model="password_confirmation" required>
+                    <input type="password" id="pass-confirmation-inp" v-model="password_confirmation" required
+                        class="inp">
                 </div>
                 <button type="submit" class="green-btn btn">Registrovať sa</button>
             </form>

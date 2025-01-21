@@ -9,8 +9,8 @@
                         :conference="conference" @openForm="openForm"></ConferenceItem>
                 </div>
                 <div v-if="selectedConference" class="modal-backdrop conference-button" @click="closeForm">
-                    <div class="modal-content" @click.stop>
-                        <button class="close-btn" @click="closeForm">✖</button>
+                    <div @click.stop>
+                        <button class="btn-close" @click="closeForm">✖</button>
                         <ArticlesForm :conference="selectedConference" @close="closeForm" />
                     </div>
                 </div>
@@ -18,31 +18,36 @@
         </div>
         <div id="user-wrapper">
             <div id="user-details">
-                <div>
-                    <p>Rola: </p>
-                    <p>{{ role.name }}</p>
+                <div class="user-details-wrapper">
+                    <div class="user-details-wrapper-left">
+                        <p>Rola: </p>
+                        <p>Celé meno: </p>
+                        <p>Email: </p>
+                        <div v-if="role.key == 'student' || role.key == 'reviewer'">
+                            <p>Univerzita: </p>
+                        </div>
+                        <div v-if="role.key == 'student' || role.key == 'reviewer'">
+                            <p>Fakulta: </p>
+                        </div>
+                    </div>
+                    <div class="user-details-wrapper-right">
+                        <p>{{ role.name }}</p>
+                        <div style="display: flex; flex-direction: row;">
+                            <p>{{ user.name }}</p>
+                            <p>{{ user.surname }}</p>
+                        </div>
+                        <p> {{ user.email }}</p>
+                        <div v-if="role.key == 'student' || role.key == 'reviewer'">
+                            <p>{{ university.name }}</p>
+                        </div>
+                        <div v-if="role.key == 'student' || role.key == 'reviewer'">
+                            <p>{{ faculty.name }}</p>
+                        </div>
+                    </div>
                 </div>
                 <div>
-                    <p>Meno a priezvisko: </p>
-                    <p>{{ user.name }}</p>
-                    <p>{{ user.surname }}</p>
+                    <button @click="logout()" id="btn-logout" class="btn">Odhlásiť sa</button>
                 </div>
-                <div>
-                    <p>Email: </p>
-                    <p> {{ user.email }}</p>
-                </div>
-                <!-- Zobrazia sa iba ak su student alebo reviewer -->
-                <div v-if="role.key == 'student' || role.key == 'reviewer'">
-                    <p>Univerzita: </p>
-                    <p>{{ university.name }}</p>
-                </div>
-                <div v-if="role.key == 'student' || role.key == 'reviewer'">
-                    <p>Fakulta: </p>
-                    <p>{{ faculty.name }}</p>
-                </div>
-            </div>
-            <div>
-                <button @click="logout()" id="btn-logout" class="btn">Odhlásiť sa</button>
             </div>
         </div>
     </div>
@@ -203,22 +208,33 @@ export default {
     align-items: center;
 }
 
-#user-details>div {
+#user-details p {
+    font-size: 1rem;
+    margin: 0 5px;
+}
+
+.user-details-wrapper {
+    width: 100%;
     display: flex;
     flex-direction: row;
-    margin: 2px;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.user-details-wrapper-left {
     font-weight: bold;
 }
 
-#user-details>div>p {
-    font-size: 1.2rem;
-    margin: 0 5px;
+.user-details-wrapper-left,
+.user-details-wrapper-right {
+    text-align: left;
 }
 
 #btn-logout {
     padding: 10px;
     font-size: 1.2rem;
-    margin-bottom: 2rem;
+    margin-top: 2rem;
     width: 10rem;
 }
 
@@ -235,23 +251,10 @@ export default {
     z-index: 1000;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
+.btn-close {
     position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    background: transparent;
-    font-size: 1.5rem;
-    cursor: pointer;
+    top: 2.7vh;
+    left: 12.2vw;
 }
 
 .conference-display {
