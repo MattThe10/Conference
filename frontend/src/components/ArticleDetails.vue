@@ -1,28 +1,41 @@
 <template>
     <div class="article-wrapper">
-        <h3>{{ article.title }} - {{ article.status }}</h3>
-        <p>{{ article.conference }}</p>
+        <div class="details-item">
+            <h3>{{ article.title }} - {{ article.status }}</h3>
+        </div>
+        
+        <div class="details-item">
+            <p>{{ article.conference }}</p>
+        </div>
 
-        <h5>Abstrakt</h5>
-        <p>{{ article.abstract ?? 'Prázdne' }}</p>
+        <div class="details-item">
+            <h5>Abstrakt</h5>
+            <p>{{ article.abstract ?? 'Prázdne' }}</p>
+        </div>
 
-        <h5>Kľúčové slová</h5>
-        <p>{{ article.keywords ?? 'Prázdne' }}</p>
+        <div class="details-item">
+            <h5>Kľúčové slová</h5>
+            <p>{{ article.keywords ?? 'Prázdne' }}</p>
+        </div>
 
-        <h5>Autori</h5>
-        <p v-for="(author, index) in article.authors" :key="index">
-            {{ author.name }} {{ author.surname }} ({{ author.email }})
-        </p>
+        <div class="details-item">
+            <h5>Autori</h5>
+            <p v-for="(author, index) in article.authors" :key="index">
+                {{ author.name }} {{ author.surname }} ({{ author.email }})
+            </p>
+        </div>
 
-        <h5>Admin</h5>
-        <p v-for="(admin, index) in admins" :key="index">
-            <span v-if="admin.role.key == 'admin'">
-                {{ admin.name }} {{ admin.surname }} ({{ admin.email }})
-            </span>
-            <span v-if="admin.role.key == 'super_admin'">
-                {{ admin.email }}
-            </span>
-        </p>
+        <div class="details-item">
+            <h5>Admin</h5>
+            <p v-for="(admin, index) in admins" :key="index">
+                <span v-if="admin.role.key == 'admin'">
+                    {{ admin.name }} {{ admin.surname }} ({{ admin.email }})
+                </span>
+                <span v-if="admin.role.key == 'super_admin'">
+                    {{ admin.email }}
+                </span>
+            </p>
+        </div>
 
         <button @click="downloadFile()" class="btn-add document-download-btn btn"
             :class="{ disabled: download_disabled }">Stiahnuť</button>
@@ -187,5 +200,9 @@ export default {
 .article-edit-btn.disabled {
     opacity: .5;
     pointer-events: none;
+}
+
+.details-item {
+    margin-bottom: 16px;
 }
 </style>

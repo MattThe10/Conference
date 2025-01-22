@@ -8,7 +8,7 @@
                 <input v-model="reviewer" id="reviewer" required /> -->
                 
                 <div class="input-group" v-for="review_feature in review_features" :key="review_feature.id">
-                    <div v-if="review_feature.is_active == 1">
+                    <div class="content" v-if="review_feature.is_active == 1">
                         <div class="question">
                             {{ review_feature.content }}
                         </div>
@@ -209,24 +209,29 @@ form {
     margin-bottom: 32px;
 }
 
-.input-group,
-.textarea-group {
+.review-form .input-group .content,
+.review-form .textarea-group {
     display: flex;
+    gap: 8px;
     justify-content: space-between;
     padding: 16px 8px;
 }
 
-.input-group:hover,
-.textarea-group:hover {
+.review-form .textarea-group {
+    flex-direction: row;
+}
+
+.review-form .input-group:hover,
+.review-form .textarea-group:hover {
     background-color: #ccc;
 }
 
-.input-group .question {
+.review-form .input-group .question {
     text-align: left;
     flex: 2;
 }
 
-.input-group .radios {
+.review-form .input-group .radios {
     flex: 1;
     display: flex;
     flex-direction: row;
@@ -235,7 +240,7 @@ form {
     gap: 2vw;
 }
 
-.textarea-group textarea {
+.review-form .textarea-group textarea {
     width: 30vw;
     font-size: 1.5rem;
 }

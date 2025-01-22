@@ -19,7 +19,7 @@
 
                     <!-- Modal for Review Form -->
                     <div v-if="showReviewForm" class="modal-backdrop" @click="closeReviewForm(selectedArticle)">
-                        <div class="modal-content" @click.stop>
+                        <div class="modal-content-review" @click.stop>
                             <button class="close-btn" @click="closeReviewForm(selectedArticle)">✖</button>
                             <ReviewForm :article="selectedArticle" @close="closeReviewForm(selectedArticle)" />
                         </div>
@@ -37,7 +37,7 @@
 
                     <!-- Modal for Review Details -->
                     <div v-if="showReviewDetails" class="modal-backdrop" @click="closeReviewDetails(selectedArticle)">
-                        <div class="modal-content" @click.stop>
+                        <div class="modal-content-review" @click.stop>
                             <button class="close-btn" @click="closeReviewDetails(selectedArticle)">✖</button>
                             <ReviewDetails :review="selectedReview" @close="closeReviewDetails(selectedArticle)" />
                         </div>
@@ -64,7 +64,7 @@
 
                     <!-- Modal for Review Form -->
                     <div v-if="showReviewForm" class="modal-backdrop" @click="closeReviewForm(selectedArticle)">
-                        <div class="modal-content" @click.stop>
+                        <div class="modal-content-review" @click.stop>
                             <button class="close-btn" @click="closeReviewForm(selectedArticle)">✖</button>
                             <ReviewForm :article="selectedArticle" @close="closeReviewForm(selectedArticle)" />
                         </div>
@@ -82,7 +82,7 @@
 
                     <!-- Modal for Review Details -->
                     <div v-if="showReviewDetails" class="modal-backdrop" @click="closeReviewDetails(selectedArticle)">
-                        <div class="modal-content" @click.stop>
+                        <div class="modal-content-review" @click.stop>
                             <button class="close-btn" @click="closeReviewDetails(selectedArticle)">✖</button>
                             <ReviewDetails :review="selectedReview" @close="closeReviewDetails(selectedArticle)" />
                         </div>
@@ -333,6 +333,15 @@ export default {
 
 /* Pridané */
 .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 40%;
+    position: relative;
+}
+
+.modal-content-review {
     background: white;
     padding: 20px;
     border-radius: 8px;

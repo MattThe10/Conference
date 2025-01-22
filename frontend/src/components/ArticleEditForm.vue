@@ -7,7 +7,7 @@
             <p v-if="errors.title" class="error">{{ errors.title[0] }}</p>
 
             <label for="email">Pridať autora</label>
-            <div>
+            <div class="input-with-button">
                 <input type="email" v-model="new_author_email" placeholder="Zadajte e-mail" />
                 <button type="button" class="btn" @click="addAuthor">Pridať</button>
             </div>
@@ -260,7 +260,8 @@ export default {
     border: none;
     border-radius: 10px;
     margin-bottom: 0.5rem;
-    width: 100%;
+    width: 10rem;
+    align-self: center;
 }
 
 .btn:disabled {
@@ -327,5 +328,13 @@ form {
 
 .error {
     color: #dc3545;
+}
+
+input {
+    width: 100%;
+}
+
+ul {
+    list-style: none;
 }
 </style>
