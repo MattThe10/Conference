@@ -2,41 +2,70 @@
 
 ## Project setup
 
-1. ### Copy the environment file
-Copy the example environment file **`.env.example`** to create a new **`.env`** file:
+1. ### Create the environment file
+In the root directory, create a new .env file by copying the example file:
 ```
 cp .env.example .env
 ```
 
-2. ### Install backend dependencies
-Navigate to the backend folder, install the dependencies using Composer, and set up the environment file:
+2. ### Set up the backend environment
+Navigate to the backend directory and create a new .env file by copying the example file:
 ```
 cd backend
-composer install
 cp .env.example .env
 ```
 
-3. ### Install frontend dependencies
-Navigate to the frontend folder, install the dependencies using npm, and set up the environment file:
+3. ### Set up the frontend environment
+Navigate to the frontend directory and create a new .env file by copying the example file:
 ```
 cd frontend
-npm install
 cp .env.example .env
 ```
 
-4. ### Build and start the project
-In the root directory of the project, run the following command to build and start the Docker containers:
+4. ### Start Docker containers
+In the root directory, start the Docker containers:
 ```
 docker-compose up -d
 ```
 
-5. ### Access the application
+5. ### Install Composer dependencies
+Run the following command to install Composer dependencies in the backend:
+```
+docker-compose exec backend composer install
+```
+
+6. ### Install npm dependencies
+Navigate to the frontend directory and install npm dependencies:
+```
+cd frontend
+npm install
+```
+
+7. ### Restart Docker containers
+Stop and restart the Docker containers to ensure proper setup:
+```
+docker-compose down
+docker-compose up -d
+```
+
+8. ### Update the database schema
+Run database migrations to update the schema:
+```
+docker-compose exec backend php artisan migrate
+```
+
+9. ### Access the application
 - Backend API: http://localhost:8080
 - Frontend application: http://localhost:3000
+- Mailpit Interface: http://localhost:8025
 
 ## Additional Commands
 
-### Stop the containers
+### Populate the database with initial data:
 ```
-docker-compose down
+docker-compose exec backend php artisan db:seed
+```
+### If necessary, reset the database and apply migrations from scratch (this will delete existing data in the database):
+```
+docker-compose exec backend php artisan migrate --fresh
 ```
