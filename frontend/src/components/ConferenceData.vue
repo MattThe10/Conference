@@ -1,45 +1,43 @@
 <template>
-    <div>
-        <h2>{{ conference.name }}</h2>
-        <div class="conference-wrapper">
-            <div class="modal">
-                <div>
-                    <h3>Abstrakt</h3>
-                    <p>
-                        {{ conference.abstract }}
-                    </p>
-                </div>
-                <div>
-                    <h3>Dátum konferencie</h3>
-                    <p>
-                        {{
-                            new Date(conference.conference_date).toLocaleDateString('sk-SK', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                            })
-                        }}
-                    </p>
-                </div>
-                <div>
-                    <h3>Deadline</h3>
-                    <p>
-                        {{
-                            new Date(conference.submission_deadline).toLocaleDateString('sk-SK', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                            })
-                        }}
-                    </p>
-                </div>
-
-                <button @click="$emit('openForm', conference)" class="btn-add article-edit-btn btn"
-                    :class="{ disabled: isDisabled(conference) }">
-                    +
-                </button>
+    <div class="conference-wrapper">
+            <div class="details-item">
+                <h2>{{ conference.name }}</h2>
             </div>
-        </div>
+            <div class="details-item">
+                <h3>Abstrakt</h3>
+                <p>
+                    {{ conference.abstract }}
+                </p>
+            </div>
+            <div class="details-item">
+                <h3>Dátum konferencie</h3>
+                <p>
+                    {{
+                        new Date(conference.conference_date).toLocaleDateString('sk-SK', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        })
+                    }}
+                </p>
+            </div>
+            <div class="details-item">
+                <h3>Deadline</h3>
+                <p>
+                    {{
+                        new Date(conference.submission_deadline).toLocaleDateString('sk-SK', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        })
+                    }}
+                </p>
+            </div>
+
+            <button @click="$emit('openForm', conference)" class="btn-add article-edit-btn btn"
+                :class="{ disabled: isDisabled(conference) }">
+                +
+            </button>
     </div>
 </template>
 <script>
@@ -162,5 +160,9 @@ export default {
 .modal {
     width: 14vw;
     gap: 1rem;
+}
+
+.details-item {
+    margin-bottom: 16px;
 }
 </style>

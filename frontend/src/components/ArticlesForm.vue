@@ -1,5 +1,5 @@
 <template>
-    <div class="modal">
+    <div>
         <h2>{{ conference.name }}</h2>
         <form id="article-form">
             <label for="title">Názov</label>
@@ -7,7 +7,7 @@
             <p v-if="errors.title" class="error">{{ errors.title[0] }}</p>
 
             <label for="email">Autor</label>
-            <div>
+            <div class="input-with-button">
                 <input type="email" class="inp inp-author" v-model="new_author_email" placeholder="Zadajte e-mail"
                     required />
                 <button type="button" class="btn btn-add" @click="addAuthor">Pridať</button>
@@ -297,5 +297,14 @@ export default {
     padding: 4px;
     font-size: 1.2rem;
     margin-left: 2px;
+}
+
+input,
+textarea {
+    width: 100%;
+}
+
+.input-with-button {
+    display: flex;
 }
 </style>
